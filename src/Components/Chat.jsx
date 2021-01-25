@@ -25,7 +25,7 @@ class Chat extends Component {
 		};
 		this.client = new tmi.Client({
 			connection: { reconnect: true, secure: true },
-			channels: ['xQcOW'],
+			channels: ['Lirik'],
 		});
 	}
 
@@ -63,10 +63,6 @@ class Chat extends Component {
 					return getBadges(user._id);
 				})
 				.then((badges) => (twitchBadgeCache.data[chan] = badges));
-			// showAdminMessage({
-			// 	message: `Joined ${chan}`,
-			// 	timeout: 1000,
-			// });
 		});
 
 		this.client.on('part', (channel, username, self) => {
@@ -75,10 +71,6 @@ class Chat extends Component {
 			}
 			let chan = getChannel(channel);
 			delete bttvEmoteCache.data[chan];
-			// showAdminMessage({
-			// 	message: `Parted ${chan}`,
-			// 	timeout: 1000,
-			// });
 		});
 
 		// this.client.on('clearchat', (channel) => {

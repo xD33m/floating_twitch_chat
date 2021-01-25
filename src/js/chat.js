@@ -340,18 +340,18 @@ let defaultColors = [
 	],
 	randomColorsChosen = {};
 
-export function resolveColor(chan, name, color) {
+export function resolveColor(channel, name, color) {
 	if (color !== null) {
 		return color;
 	}
-	if (!(chan in randomColorsChosen)) {
-		randomColorsChosen[chan] = {};
+	if (!(channel in randomColorsChosen)) {
+		randomColorsChosen[channel] = {};
 	}
-	if (name in randomColorsChosen[chan]) {
-		color = randomColorsChosen[chan][name];
+	if (name in randomColorsChosen[channel]) {
+		color = randomColorsChosen[channel][name];
 	} else {
 		color = defaultColors[Math.floor(Math.random() * defaultColors.length)];
-		randomColorsChosen[chan][name] = color;
+		randomColorsChosen[channel][name] = color;
 	}
 	return color;
 }
