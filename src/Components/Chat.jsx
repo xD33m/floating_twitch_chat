@@ -11,6 +11,8 @@ import {
 	handleEmotes,
 	addEmotes,
 	getFFZEmotes,
+	resolveColor,
+	ffzEmoteCache,
 } from '../js/chat';
 import tmi from 'tmi.js';
 import ChatMessage from './ChatMessage';
@@ -33,36 +35,16 @@ class Chat extends Component {
 	};
 
 	addListeners = () => {
-		// this.client.on('connecting', () => {
-		// 	showAdminMessage({
-		// 		message: 'Connecting...',
-		// 		attribs: { subtype: 'connecting' },
-		// 	});
-		// 	removeAdminChatLine({ subtype: 'disconnected' });
-		// });
-
 		this.client.on('connected', () => {
-			getBTTVEmotes();
-			getFFZEmotes();
+			getBTTVEmotes(); // load globals
+			// getFFZEmotes();
 			getBadges().then((badges) => (twitchBadgeCache.data.global = badges));
-			// showAdminMessage({
-			// 	message: 'Connected...',
-			// 	attribs: { subtype: 'connected' },
-			// 	timeout: 5000,
-			// });
-			// removeAdminChatLine({ subtype: 'connecting' });
-			// removeAdminChatLine({ subtype: 'disconnected' });
 		});
 
 		this.client.on('disconnected', () => {
 			twitchBadgeCache.data = { global: {} };
 			bttvEmoteCache.data = { global: [] };
-			// showAdminMessage({
-			// 	message: 'Disconnected...',
-			// 	attribs: { subtype: 'disconnected' },
-			// });
-			// removeAdminChatLine({ subtype: 'connecting' });
-			// removeAdminChatLine({ subtype: 'connected' });
+			ffzEmoteCache.data = { global: [] };
 		});
 
 		this.client.on('message', this.handleMessage);
@@ -73,9 +55,13 @@ class Chat extends Component {
 				return;
 			}
 			let chan = getChannel(channel);
-			getBTTVEmotes(chan);
+
 			twitchNameToUser(chan)
-				.then((user) => getBadges(user._id))
+				.then((user) => {
+					getBTTVEmotes(chan, user._id);
+					getFFZEmotes(user._id);
+					return getBadges(user._id);
+				})
 				.then((badges) => (twitchBadgeCache.data[chan] = badges));
 			// showAdminMessage({
 			// 	message: `Joined ${chan}`,
@@ -105,8 +91,6 @@ class Chat extends Component {
 	};
 
 	handleMessage = (channel, data, message, fromSelf) => {
-		// console.log(message);
-
 		let chan = getChannel(channel);
 		let username = data['display-name'] || data.username;
 		if (/[^\w]/g.test(username)) {
@@ -115,12 +99,13 @@ class Chat extends Component {
 		data.name = username;
 		let badges = prepareBadges(chan, data);
 		let finalMessage = handleEmotes(chan, data.emotes || {}, message);
-		console.log(addEmotes(finalMessage));
+		// console.log(addEmotes(finalMessage));
 		let chatMessage = (
 			<ChatMessage
 				username={username}
 				message={addEmotes(finalMessage)}
 				badges={badges}
+				color={resolveColor(channel, data.username, data.color)}
 			/>
 		);
 
@@ -136,7 +121,7 @@ class Chat extends Component {
 	};
 
 	render() {
-		return <div>{this.state.messages.map((msg) => msg)}</div>;
+		return <div id="chat">{this.state.messages.map((msg) => msg)}</div>;
 	}
 }
 

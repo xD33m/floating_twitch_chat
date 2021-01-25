@@ -1,6 +1,7 @@
 #chat {
 	position: absolute;
 	bottom: 10px;
+	left: 10px;
 	width: 400px;
 }
 
@@ -15,8 +16,10 @@
 	transition: opacity 2s, max-height 1s, margin-top 300ms;
 }
 .chat-line .chat-line-inner {
-	background-color: rgba(31, 31, 31, 0.6);
+	background-color: hsl(211, 100%, -22%);
+	color: white;
 	padding: 10px;
+	border-radius: 5px;
 	overflow-wrap: break-word;
 }
 .chat-line .chat-line-inner .badges img.badge {
@@ -29,13 +32,13 @@
 	opacity: 0.4;
 }
 
-.user-name {
-	color: #6bff90;
-}
-
 .message img {
 	vertical-align: text-bottom;
 }
 .message img.emoji {
 	width: 20px;
+}
+
+.username {
+	font-weight: 650;
 }

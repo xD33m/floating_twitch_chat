@@ -260,24 +260,22 @@ export async function getBadges(channel) {
 	return data.badge_sets;
 }
 
-export async function getBTTVEmotes(channel) {
+export async function getBTTVEmotes(channel, channelID) {
 	let url = '';
-	let endpoint = '';
 	// let endpoint = 'emotes';
 	let global = true;
-	if (channel) {
+	if (channelID && channel) {
 		// endpoint = 'channels/' + channel;
-		endpoint = '';
 		global = false;
-		url = 'https://api.betterttv.net/3/cached/users/twitch/71092938';
+		url = `https://api.betterttv.net/3/cached/users/twitch/${channelID}`;
 	} else {
 		url = 'https://api.betterttv.net/3/cached/emotes/global';
 	}
 
 	const response = await request({
 		base: url,
-		endpoint,
 	});
+
 	if (response.status === 404) return;
 	// bttvEmoteCache.urlTemplate = urlTemplate;
 	if (global) {
@@ -293,24 +291,67 @@ export async function getBTTVEmotes(channel) {
 			if (channel in bttvEmoteCache.data === false) {
 				bttvEmoteCache.data[channel] = [];
 			}
-			bttvEmoteCache.data.global.push(n_1);
+			bttvEmoteCache.data[channel].push(n_1);
+		});
+		response.sharedEmotes.forEach((n_1) => {
+			n_1.global = global;
+			n_1.type = ['bttv', 'emote'];
+			if (channel in bttvEmoteCache.data === false) {
+				bttvEmoteCache.data[channel] = [];
+			}
+			bttvEmoteCache.data[channel].push(n_1);
 		});
 	}
 }
 
-export async function getFFZEmotes(channel) {
-	let url = 'https://api.frankerfacez.com/v1/room/id/71092938';
+export async function getFFZEmotes(channelID) {
+	let url = `https://api.frankerfacez.com/v1/room/id/${channelID}`;
 
 	const response = await request({
 		base: url,
 	});
 	if (response.status === 404) return;
 	let emotes = Object.values(response.sets)[0].emoticons;
-	console.log(emotes);
+	// console.log(emotes);
 	// bttvEmoteCache.urlTemplate = urlTemplate;
 	emotes.forEach((n) => {
 		n.global = global;
 		n.type = ['ffz', 'emote'];
 		ffzEmoteCache.data.global.push(n);
 	});
+}
+
+let defaultColors = [
+		'#FF0000',
+		'#0000FF',
+		'#008000',
+		'#B22222',
+		'#FF7F50',
+		'#9ACD32',
+		'#FF4500',
+		'#2E8B57',
+		'#DAA520',
+		'#D2691E',
+		'#5F9EA0',
+		'#1E90FF',
+		'#FF69B4',
+		'#8A2BE2',
+		'#00FF7F',
+	],
+	randomColorsChosen = {};
+
+export function resolveColor(chan, name, color) {
+	if (color !== null) {
+		return color;
+	}
+	if (!(chan in randomColorsChosen)) {
+		randomColorsChosen[chan] = {};
+	}
+	if (name in randomColorsChosen[chan]) {
+		color = randomColorsChosen[chan][name];
+	} else {
+		color = defaultColors[Math.floor(Math.random() * defaultColors.length)];
+		randomColorsChosen[chan][name] = color;
+	}
+	return color;
 }

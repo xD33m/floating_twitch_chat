@@ -9,7 +9,7 @@ class ChatMessage extends Component {
 	componentDidMount = () => {};
 
 	render() {
-		const { username, badges, message } = this.props;
+		const { username, badges, message, color } = this.props;
 		return (
 			<div className="chat-line visible">
 				<div className="chat-line-inner">
@@ -25,7 +25,9 @@ class ChatMessage extends Component {
 							);
 						})}
 					</span>
-					<span className="user-name">{username}</span>
+					<span className="username" style={{ color: color }}>
+						{username}
+					</span>
 					<span className="message-colon">: </span>
 					<span className="message">
 						{message.map((msg) => {
