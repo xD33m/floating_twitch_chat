@@ -1,38 +1,41 @@
-.App {
-  text-align: center;
+#chat {
+	position: absolute;
+	bottom: 10px;
+	width: 400px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.chat-line {
+	overflow: hidden;
+	max-height: 0px;
+	transition: opacity 2s, max-height 1s, margin-top 1s;
+}
+.chat-line.visible {
+	margin-top: 10px;
+	max-height: 300px;
+	transition: opacity 2s, max-height 1s, margin-top 300ms;
+}
+.chat-line .chat-line-inner {
+	background-color: rgba(31, 31, 31, 0.6);
+	padding: 10px;
+	overflow-wrap: break-word;
+}
+.chat-line .chat-line-inner .badges img.badge {
+	margin-right: 6px;
+	vertical-align: text-bottom;
+	width: 18px;
+	height: 18px;
+}
+.chat-line .chat-line-inner.admin .message {
+	opacity: 0.4;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.user-name {
+	color: #6bff90;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.message img {
+	vertical-align: text-bottom;
 }
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.message img.emoji {
+	width: 20px;
 }
