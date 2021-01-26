@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
 
 class ChatMessage extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {};
-	}
-
-	componentDidMount = () => {};
-
 	render() {
 		const { username, badges, message, color } = this.props;
 		return (
