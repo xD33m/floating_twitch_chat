@@ -48,7 +48,6 @@ class Chat extends Component {
 	}
 
 	componentDidMount = () => {
-		console.log(this.props.currentStreamer);
 		this.client = new tmi.Client({
 			connection: { reconnect: true, secure: true },
 			channels: [this.props.currentStreamer],
