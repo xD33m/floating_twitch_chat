@@ -42,6 +42,7 @@ class Chat extends Component {
 		super(props);
 		this.state = {
 			messages: [],
+			isOnRightSide: true,
 		};
 
 		this.chatRef = React.createRef();
@@ -153,7 +154,8 @@ class Chat extends Component {
 			relativePos.right = Math.abs(childPos.right - parentPos.right);
 			relativePos.left = Math.abs(childPos.left - parentPos.left);
 
-			return relativePos.left > relativePos.right ? true : false;
+			const isOnRightSide = relativePos.left > relativePos.right ? true : false;
+			this.setState({ isOnRightSide: isOnRightSide });
 		}
 	};
 
@@ -163,14 +165,16 @@ class Chat extends Component {
 			<motion.div
 				drag
 				dragConstraints={constraintsRef}
-				style={{ height: '700px', width: '400px', overflow: 'hidden' }}
+				dragMomentum={false}
+				onDrag={() => this.isOnRightSide()}
 				className="chat"
+				// style={{ height: '700px', width: '400px', overflow: 'hidden' }}
 				ref={this.chatRef}
 			>
 				<motion.div
-					className="chat"
+					className="chat-inner"
 					style={
-						this.isOnRightSide()
+						this.state.isOnRightSide
 							? { alignItems: 'flex-end' }
 							: { alignItems: 'flex-start' }
 					}
@@ -185,6 +189,7 @@ class Chat extends Component {
 					))}
 				</motion.div>
 				<div
+					style={{ marginTop: '10px' }}
 					ref={(el) => {
 						this.messagesEnd = el;
 					}}
