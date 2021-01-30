@@ -1,0 +1,11 @@
+/* CSS für's popup in public/popup.html */
+
+#text {
+	color: blue !important;
+	font-weight: bold;
+}
+
+#frame {
+	width: 150px;
+	height: 125px;
+}

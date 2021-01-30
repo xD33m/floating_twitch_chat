@@ -43,14 +43,16 @@ class Chat extends Component {
 		this.state = {
 			messages: [],
 		};
-		this.client = new tmi.Client({
-			connection: { reconnect: true, secure: true },
-			channels: ['anthony_kongphan'],
-		});
+
 		this.chatRef = React.createRef();
 	}
 
 	componentDidMount = () => {
+		console.log(this.props.currentStreamer);
+		this.client = new tmi.Client({
+			connection: { reconnect: true, secure: true },
+			channels: [this.props.currentStreamer],
+		});
 		this.client.connect();
 		this.addListeners();
 

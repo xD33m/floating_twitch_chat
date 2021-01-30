@@ -3,19 +3,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+
 class Main extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {};
+	}
+
 	render() {
-		return <App document={document} window={window} isExt={true} />;
+		return <App currentStreamer={this.props.currentStreamer} />;
 	}
 }
 
 const app = document.createElement('div');
 app.id = 'my-extension-root';
-// app.style.display = 'none';
 
-// ReactDOM.render(<Main />, app);
-
-function isFullScreen(callback) {
+function isFullScreen() {
 	setTimeout(checkForFullScreen, 100);
 }
 
@@ -23,30 +26,14 @@ function checkForFullScreen() {
 	chrome.runtime.sendMessage('getScreenState', (result) => {
 		if (result === 'fullscreen') {
 			console.log('ITS FULLSCREEN POG');
-			ReactDOM.render(<Main />, app);
+			const currentStreamer = window.location.pathname.slice(1);
+			ReactDOM.render(<Main currentStreamer={currentStreamer} />, app);
 		} else {
 			console.log('no fullscreen :(');
 			ReactDOM.unmountComponentAtNode(app);
-			// hideOverlay();
 		}
 	});
 }
-
-// function fullscreenChanged(event) {
-// 	console.log('Fullscreen: ' + event.detail);
-// 	alert('Fullscreen: ' + event.detail);
-// }
-
-// function sendEvent(fullscreen) {
-// 	var event = new CustomEvent('fullscreenchange', {
-// 		detail: fullscreen,
-// 		bubbles: true,
-// 		cancelable: true,
-// 	});
-
-// 	if (document.fullscreenElement) document.fullscreenElement.dispatchEvent(event);
-// 	else document.dispatchEvent(event);
-// }
 
 (() => {
 	var docLoaded = setInterval(function () {
@@ -65,29 +52,14 @@ function checkForFullScreen() {
 			}
 		}, 30);
 
-		var ok = true;
 		window.addEventListener(
 			'resize',
 			() => {
-				setTimeout(() => {
-					if (ok) {
-						ok = false;
-						setTimeout(() => {
-							ok = true;
-						}, 170);
-						isFullScreen();
-					}
-				}, 30);
+				isFullScreen();
 			},
 			false
 		);
 	}, 30);
-	// window.addEventListener('load', () => {
-	// 	// document
-	// 	// 	.querySelector('button[data-a-target="player-fullscreen-button"]')
-	// 	// 	.addEventListener('click', isFullScreen);
-	// 	// document.addEventListener('fullscreenchange', fullscreenChanged, false);
-	// });
 })();
 
 // chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
@@ -95,18 +67,3 @@ function checkForFullScreen() {
 // 		toggle();
 // 	}
 // });
-
-// const displayOverlay = () => {
-// 	app.style.display = 'block';
-// };
-
-// const hideOverlay = () => {
-// 	app.style.display = 'none';
-// };
-
-// const toggle = () => {
-// 	if (app.style.display === 'none') {
-// 	} else {
-// 		app.style.display = 'none';
-// 	}
-// };
