@@ -4,36 +4,31 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 
-const currentStreamer = window.location.pathname.slice(1);
-
 class Main extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			bgColor: 'hsla(211, 100%, -22%, 0.5)',
 			compactMode: false,
-			numberOfMessages: 10,
 			disableOverlay: false,
+			numberOfMessages: 10,
 		};
 	}
 
-	componentDidMount = () => {
-		chrome.storage.local.get((storage) => {
-			this.setState({
-				...storage,
-			});
-		});
-	};
-
 	render() {
 		console.log('the state', this.state);
+		console.log('currentstreamer', this.state.currentStreamer);
+		const { settings } = this.props;
+		console.log('seetings', settings);
 		return (
 			<App
-				bgColor={this.state.bgColor}
-				disableOverlay={this.state.disableOverlay}
-				numberOfMessages={this.state.numberOfMessages}
-				compactMode={this.state.compactMode}
-				currentStreamer={currentStreamer}
+				bgColor={settings.bgColor || this.state.bgColor}
+				disableOverlay={settings.disableOverlay || this.state.disableOverlay}
+				numberOfMessages={
+					settings.numberOfMessages || this.state.numberOfMessages
+				}
+				compactMode={settings.compactMode || this.state.compactMode}
+				currentStreamer={this.props.currentStreamer}
 			/>
 		);
 	}
@@ -50,7 +45,15 @@ function checkForFullScreen() {
 	chrome.runtime.sendMessage('getScreenState', (result) => {
 		if (result === 'fullscreen') {
 			console.log('ITS FULLSCREEN POG');
-			ReactDOM.render(<Main />, app);
+			chrome.storage.local.get((storage) => {
+				ReactDOM.render(
+					<Main
+						settings={storage}
+						currentStreamer={window.location.pathname.slice(1)}
+					/>,
+					app
+				);
+			});
 		} else {
 			console.log('no fullscreen :(');
 			ReactDOM.unmountComponentAtNode(app);

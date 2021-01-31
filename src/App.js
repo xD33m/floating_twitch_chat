@@ -12,7 +12,6 @@ class App extends Component {
 	}
 
 	render() {
-		console.log(this.props.compactMode);
 		return (
 			<motion.div className="App" ref={this.constraintsRef}>
 				<Chat
