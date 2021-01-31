@@ -56,6 +56,8 @@ class Chat extends Component {
 		this.client.connect();
 		this.addListeners();
 
+		this.isOnRightSide();
+
 		this.scrollToBottom();
 	};
 

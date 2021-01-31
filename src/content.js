@@ -4,19 +4,54 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 
+// let disableOverlay = false;
+// let bgColor = 'hsla(211, 100%, -22%, 0.5)';
+// let compactMode = false;
+// let numberOfMessages = 10;
+const currentStreamer = window.location.pathname.slice(1);
+
 class Main extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.state = {
+			bgColor: 'hsla(211, 100%, -22%, 0.5)',
+			compactMode: false,
+			numberOfMessages: 10,
+			disableOverlay: false,
+		};
 	}
 
+	componentDidMount = () => {
+		chrome.storage.local.get((storage) => {
+			this.setState({
+				...storage,
+			});
+		});
+	};
+
 	render() {
-		return <App currentStreamer={this.props.currentStreamer} />;
+		console.log('the state', this.state);
+		return (
+			<App
+				bgColor={this.state.bgColor}
+				disableOverlay={this.state.disableOverlay}
+				numberOfMessages={this.state.numberOfMessages}
+				compactMode={this.state.compactMode}
+				currentStreamer={currentStreamer}
+			/>
+		);
 	}
 }
 
 const app = document.createElement('div');
 app.id = 'my-extension-root';
+
+/* For Debbung */
+
+// document.body.appendChild(app);
+// updateChatComponent();
+
+/* ---------- */
 
 function isFullScreen() {
 	setTimeout(checkForFullScreen, 100);
@@ -26,8 +61,7 @@ function checkForFullScreen() {
 	chrome.runtime.sendMessage('getScreenState', (result) => {
 		if (result === 'fullscreen') {
 			console.log('ITS FULLSCREEN POG');
-			const currentStreamer = window.location.pathname.slice(1);
-			ReactDOM.render(<Main currentStreamer={currentStreamer} />, app);
+			ReactDOM.render(<Main />, app);
 		} else {
 			console.log('no fullscreen :(');
 			ReactDOM.unmountComponentAtNode(app);
@@ -62,8 +96,22 @@ function checkForFullScreen() {
 	}, 30);
 })();
 
-// chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-// 	if (request.message === 'clicked_browser_action') {
-// 		toggle();
-// 	}
-// });
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (request.message === 'compactMode') {
+		chrome.storage.local.set({
+			compactMode: request.value,
+		});
+	} else if (request.message === 'disableOverlay') {
+		chrome.storage.local.set({
+			disableOverlay: request.value,
+		});
+	} else if (request.message === 'colorPicker') {
+		chrome.storage.local.set({
+			bgColor: request.value,
+		});
+	} else if (request.message === 'messageNumber') {
+		chrome.storage.local.set({
+			messageNumber: request.value,
+		});
+	}
+});

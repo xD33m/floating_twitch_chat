@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 
 class ChatMessage extends Component {
+	shouldComponentUpdate = () => {
+		return false;
+	};
+
 	render() {
 		const { username, badges, message, color } = this.props;
 		return (
