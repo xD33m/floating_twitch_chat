@@ -4,10 +4,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 
-// let disableOverlay = false;
-// let bgColor = 'hsla(211, 100%, -22%, 0.5)';
-// let compactMode = false;
-// let numberOfMessages = 10;
 const currentStreamer = window.location.pathname.slice(1);
 
 class Main extends React.Component {
@@ -45,13 +41,6 @@ class Main extends React.Component {
 
 const app = document.createElement('div');
 app.id = 'my-extension-root';
-
-/* For Debbung */
-
-// document.body.appendChild(app);
-// updateChatComponent();
-
-/* ---------- */
 
 function isFullScreen() {
 	setTimeout(checkForFullScreen, 100);
