@@ -101,14 +101,6 @@ class Chat extends Component {
 			let chan = getChannel(channel);
 			delete bttvEmoteCache.data[chan];
 		});
-
-		// this.client.on('clearchat', (channel) => {
-		// 	removeChatLine({ channel });
-		// });
-
-		// this.client.on('timeout', (channel, username) => {
-		// 	removeChatLine({ channel, username });
-		// });
 	};
 
 	handleMessage = (channel, data, message, fromSelf) => {
