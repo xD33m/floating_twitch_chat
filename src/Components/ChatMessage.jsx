@@ -7,9 +7,23 @@ class ChatMessage extends Component {
 
 	render() {
 		const { username, badges, message, color } = this.props;
+		const {
+			bgColor,
+			disableOverlay,
+			numberOfMessages,
+			compactMode,
+			currentStreamer,
+		} = this.props.settings;
 		return (
 			<div className="chat-line visible">
-				<div className="chat-line-inner">
+				<div
+					className={
+						compactMode ? 'chat-line-inner-compact' : 'chat-line-inner'
+					}
+					style={{
+						backgroundColor: bgColor ? bgColor : 'hsla(211, 100%, -22%, 0.5)',
+					}}
+				>
 					<span className="badges">
 						{badges.map((badge) => {
 							return (

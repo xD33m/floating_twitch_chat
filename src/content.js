@@ -16,8 +16,6 @@ class Main extends React.Component {
 	}
 
 	render() {
-		console.log('the state', this.state);
-		console.log('currentstreamer', this.state.currentStreamer);
 		const { settings } = this.props;
 		console.log('seetings', settings);
 		return (
@@ -35,7 +33,7 @@ class Main extends React.Component {
 }
 
 const app = document.createElement('div');
-app.id = 'my-extension-root';
+app.id = 'chat-overlay-root';
 
 function isFullScreen() {
 	setTimeout(checkForFullScreen, 100);
@@ -87,23 +85,3 @@ function checkForFullScreen() {
 		);
 	}, 30);
 })();
-
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	if (request.message === 'compactMode') {
-		chrome.storage.local.set({
-			compactMode: request.value,
-		});
-	} else if (request.message === 'disableOverlay') {
-		chrome.storage.local.set({
-			disableOverlay: request.value,
-		});
-	} else if (request.message === 'colorPicker') {
-		chrome.storage.local.set({
-			bgColor: request.value,
-		});
-	} else if (request.message === 'messageNumber') {
-		chrome.storage.local.set({
-			messageNumber: request.value,
-		});
-	}
-});

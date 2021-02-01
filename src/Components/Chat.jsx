@@ -59,10 +59,6 @@ class Chat extends Component {
 		this.isOnRightSide();
 	};
 
-	componentDidUpdate() {
-		this.scrollToBottom();
-	}
-
 	componentWillUnmount = () => {
 		this.client.disconnect();
 	};

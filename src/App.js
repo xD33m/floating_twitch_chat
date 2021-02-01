@@ -15,6 +15,7 @@ class App extends Component {
 		return (
 			<motion.div className="App" ref={this.constraintsRef}>
 				<Chat
+					settings={this.props}
 					currentStreamer={this.props.currentStreamer}
 					constraintsRef={this.constraintsRef}
 				/>

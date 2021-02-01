@@ -124,34 +124,40 @@ export function handleEmotes(channel, emotes, message) {
 		});
 		return p.concat(emoteData);
 	}, []);
-	bttvEmotes.forEach(({ code, id, type, imageType }) => {
-		let hasEmote = message.indexOf(code);
-		if (hasEmote === -1) {
-			return;
-		}
-		for (
-			let start = message.indexOf(code);
-			start > -1;
-			start = message.indexOf(code, start + 1)
-		) {
-			let end = start + code.length;
-			allEmotes.push({ start, end, id, code, type });
-		}
-	});
-	ffzEmotes.forEach(({ name, id, type, imageType }) => {
-		let hasEmote = message.indexOf(name);
-		if (hasEmote === -1) {
-			return;
-		}
-		for (
-			let start = message.indexOf(name);
-			start > -1;
-			start = message.indexOf(name, start + 1)
-		) {
-			let end = start + name.length;
-			allEmotes.push({ start, end, id, name, type });
-		}
-	});
+	if (bttvEmotes) {
+		bttvEmotes.forEach(({ code, id, type, imageType }) => {
+			let hasEmote = message.indexOf(code);
+			if (hasEmote === -1) {
+				return;
+			}
+			for (
+				let start = message.indexOf(code);
+				start > -1;
+				start = message.indexOf(code, start + 1)
+			) {
+				let end = start + code.length;
+				allEmotes.push({ start, end, id, code, type });
+			}
+		});
+	}
+
+	if (ffzEmotes) {
+		ffzEmotes.forEach(({ name, id, type, imageType }) => {
+			let hasEmote = message.indexOf(name);
+			if (hasEmote === -1) {
+				return;
+			}
+			for (
+				let start = message.indexOf(name);
+				start > -1;
+				start = message.indexOf(name, start + 1)
+			) {
+				let end = start + name.length;
+				allEmotes.push({ start, end, id, name, type });
+			}
+		});
+	}
+
 	let seen = [];
 	allEmotes = allEmotes
 		.sort((a, b) => a.start - b.start)
@@ -285,22 +291,26 @@ export async function getBTTVEmotes(channel, channelID) {
 			bttvEmoteCache.data.global.push(n);
 		});
 	} else {
-		response.channelEmotes.forEach((n_1) => {
-			n_1.global = global;
-			n_1.type = ['bttv', 'emote'];
-			if (channel in bttvEmoteCache.data === false) {
-				bttvEmoteCache.data[channel] = [];
-			}
-			bttvEmoteCache.data[channel].push(n_1);
-		});
-		response.sharedEmotes.forEach((n_1) => {
-			n_1.global = global;
-			n_1.type = ['bttv', 'emote'];
-			if (channel in bttvEmoteCache.data === false) {
-				bttvEmoteCache.data[channel] = [];
-			}
-			bttvEmoteCache.data[channel].push(n_1);
-		});
+		if (response.channelEmotes) {
+			response.channelEmotes.forEach((n_1) => {
+				n_1.global = global;
+				n_1.type = ['bttv', 'emote'];
+				if (channel in bttvEmoteCache.data === false) {
+					bttvEmoteCache.data[channel] = [];
+				}
+				bttvEmoteCache.data[channel].push(n_1);
+			});
+		}
+		if (response.sharedEmotes) {
+			response.sharedEmotes.forEach((n_1) => {
+				n_1.global = global;
+				n_1.type = ['bttv', 'emote'];
+				if (channel in bttvEmoteCache.data === false) {
+					bttvEmoteCache.data[channel] = [];
+				}
+				bttvEmoteCache.data[channel].push(n_1);
+			});
+		}
 	}
 }
 

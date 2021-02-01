@@ -28,44 +28,28 @@ window.onload = function () {
 			},
 		});
 		pickr.on('save', (color, instance) => {
-			sendMessageToContentScript({
-				message: 'colorPicker',
-				value: color.toRGBA().toString(),
+			chrome.storage.local.set({
+				bgColor: color.toRGBA().toString(),
 			});
 			pickr.hide();
 		});
 	});
 };
 
-const sendMessageToContentScript = (msg) => {
-	chrome.tabs.query(
-		{
-			url: '*://*.twitch.tv/*',
-		},
-		(tabs) => {
-			console.log(tabs);
-
-			for (const tab of tabs) {
-				chrome.tabs.sendMessage(tab.id, msg);
-			}
-		}
-	);
-};
-
 document.getElementById('compactMode').addEventListener('click', (event) => {
-	sendMessageToContentScript({
-		message: 'compactMode',
-		value: event.currentTarget.checked,
+	chrome.storage.local.set({
+		compactMode: event.currentTarget.checked,
 	});
 });
 
 document.getElementById('disableOverlay').addEventListener('click', (event) => {
-	sendMessageToContentScript({
-		message: 'disableOverlay',
-		value: event.currentTarget.checked,
+	chrome.storage.local.set({
+		disableOverlay: event.currentTarget.checked,
 	});
 });
 
 document.getElementById('messageNumber').addEventListener('input', (event) => {
-	sendMessageToContentScript({ message: 'messageNumber', value: event.target.value });
+	chrome.storage.local.set({
+		messageNumber: event.target.value,
+	});
 });

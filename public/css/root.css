@@ -51,22 +51,36 @@ body {
 	overflow: hidden;
 	max-height: 0px;
 	display: inline-block;
-	/* transition: opacity 2s, max-height 1s, margin-top 1s; */
 }
 .chat-line.visible {
 	/* margin-top: 10px; */
 	max-height: 300px;
-	/* transition: opacity 2s, max-height 1s, margin-top 300ms; */
 }
 .chat-line .chat-line-inner {
-	background-color: hsla(211, 100%, -22%, 0.5);
 	color: white;
 	padding: 10px;
-	margin: 5px;
+	margin: 2px;
 	border-radius: 5px;
 	overflow-wrap: break-word;
 }
+
+.chat-line .chat-line-inner-compact {
+	color: white;
+	padding: 5px;
+	height: 100%;
+	/* margin: 5px; */
+	border-radius: 5px;
+	overflow-wrap: break-word;
+}
+
 .chat-line .chat-line-inner .badges img.badge {
+	margin-right: 6px;
+	vertical-align: text-bottom;
+	width: 18px;
+	height: 18px;
+}
+
+.chat-line .chat-line-inner-compact .badges img.badge {
 	margin-right: 6px;
 	vertical-align: text-bottom;
 	width: 18px;
