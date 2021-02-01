@@ -57,8 +57,6 @@ class Chat extends Component {
 		this.addListeners();
 
 		this.isOnRightSide();
-
-		this.scrollToBottom();
 	};
 
 	componentDidUpdate() {
@@ -132,6 +130,7 @@ class Chat extends Component {
 				message={addEmotes(finalMessage)}
 				badges={badges}
 				color={resolveColor(channel, data.username, data.color)}
+				settings={this.props.settings}
 			/>
 		);
 
@@ -140,11 +139,15 @@ class Chat extends Component {
 				? this.state.messages.slice(10)
 				: this.state.messages;
 
-		this.setState({ messages: [...messages, chatMessage] });
+		this.setState({ messages: [...messages, chatMessage] }, () =>
+			this.scrollToBottom()
+		);
 	};
 
 	scrollToBottom = () => {
-		this.messagesEnd.scrollIntoView({ behavior: 'smooth' });
+		const scroll =
+			this.chatRef.current.scrollHeight - this.chatRef.current.clientHeight;
+		this.chatRef.current.scrollTo(0, scroll);
 	};
 
 	isOnRightSide = () => {
@@ -190,12 +193,6 @@ class Chat extends Component {
 						</motion.div>
 					))}
 				</motion.div>
-				<div
-					style={{ marginTop: '10px' }}
-					ref={(el) => {
-						this.messagesEnd = el;
-					}}
-				></div>
 			</motion.div>
 		);
 	}
