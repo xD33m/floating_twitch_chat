@@ -27,6 +27,7 @@ const container = {
 			staggerChildren: 0.5,
 		},
 	},
+	compact: { opacity: 1, scale: 1 },
 };
 
 const item = {
@@ -35,6 +36,7 @@ const item = {
 		x: 0,
 		opacity: 1,
 	},
+	compact: { opacity: 1, scale: 1 },
 };
 
 class Chat extends Component {
@@ -153,35 +155,45 @@ class Chat extends Component {
 	};
 
 	render() {
-		const { constraintsRef } = this.props;
+		const { constraintsRef, settings } = this.props;
 		return (
-			<motion.div
-				drag
-				dragConstraints={constraintsRef}
-				dragMomentum={false}
-				onDrag={() => this.isOnRightSide()}
-				className="chat"
-				// style={{ height: '700px', width: '400px', overflow: 'hidden' }}
-				ref={this.chatRef}
-			>
+			!settings.disableOverlay && (
 				<motion.div
-					className="chat-inner"
-					style={
-						this.state.isOnRightSide
-							? { alignItems: 'flex-end' }
-							: { alignItems: 'flex-start' }
-					}
-					variants={container}
-					initial="hidden"
-					animate={this.state.messages.length ? 'visible' : 'hidden'}
+					drag
+					dragConstraints={constraintsRef}
+					dragMomentum={false}
+					onDrag={() => this.isOnRightSide()}
+					className="chat"
+					// style={{ height: '700px', width: '400px', overflow: 'hidden' }}
+					ref={this.chatRef}
 				>
-					{this.state.messages.map((msg, i) => (
-						<motion.div key={i} variants={item}>
-							{msg}
-						</motion.div>
-					))}
+					<motion.div
+						className={
+							settings.compactMode ? 'chat-inner-compact' : 'chat-inner'
+						}
+						style={
+							this.state.isOnRightSide
+								? { alignItems: 'flex-end' }
+								: { alignItems: 'flex-start' }
+						}
+						variants={container}
+						initial="hidden"
+						animate={
+							settings.compactMode
+								? 'compact'
+								: this.state.messages.length
+								? 'visible'
+								: 'hidden'
+						}
+					>
+						{this.state.messages.map((msg, i) => (
+							<motion.div key={i} variants={item}>
+								{msg}
+							</motion.div>
+						))}
+					</motion.div>
 				</motion.div>
-			</motion.div>
+			)
 		);
 	}
 }

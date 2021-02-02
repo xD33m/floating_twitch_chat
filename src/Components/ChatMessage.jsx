@@ -7,13 +7,7 @@ class ChatMessage extends Component {
 
 	render() {
 		const { username, badges, message, color } = this.props;
-		const {
-			bgColor,
-			disableOverlay,
-			numberOfMessages,
-			compactMode,
-			currentStreamer,
-		} = this.props.settings;
+		const { bgColor, compactMode } = this.props.settings;
 		return (
 			<div className="chat-line visible">
 				<div
