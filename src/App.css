@@ -15,6 +15,21 @@ body {
 	padding: 10px;
 }
 
+input:focus {
+	box-shadow: none !important;
+}
+
+input[type='range'] {
+	display: inline-block !important;
+	position: absolute;
+	top: 153px;
+	right: 67px;
+}
+
+input[type='range']:active {
+	transform: none !important;
+}
+
 input[type='checkbox'] {
 	margin-bottom: 20px !important;
 }
@@ -28,6 +43,11 @@ input[type='number'] {
 	width: 40px !important;
 	height: 4px !important;
 	margin-left: 5px;
+}
+
+button {
+	padding-right: 15px !important;
+	padding-left: 15px !important;
 }
 
 .pickr {

@@ -164,7 +164,11 @@ class Chat extends Component {
 					dragMomentum={false}
 					onDrag={() => this.isOnRightSide()}
 					className="chat"
-					// style={{ height: '700px', width: '400px', overflow: 'hidden' }}
+					style={{
+						height: settings.chatHeight
+							? `${settings.chatHeight}px`
+							: '500px',
+					}}
 					ref={this.chatRef}
 				>
 					<motion.div

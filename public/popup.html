@@ -18,11 +18,14 @@
             <input type="checkbox" id="disableOverlay">
             <label for="disableOverlay">Disable Overlay</label>
         </br>
-            <label for="pickr">Background Color</label>
+            <label for="pickr">Background Color:</label>
             <div class="color-picker" id="pickr"></div>
         </br>
-        <label for="messageNumber">Number of messages shown</label>
-        <input type="number" id="messageNumber"></input>
+            <label for="chatHeight">Chat height:</label>
+            <input type="range" min="100" max="900" value="500" class="slider" id="chatHeight"></input>
+            <span  style="position: absolute; right: 25px"><span id="heightValue"></span>px</span>
+        </br>
+            <button id="reset">Reset to default</button>
         </div>
         <script src="/libs/pickr.min.js"></script>
         <script src="/app/popup.js" ></script>  

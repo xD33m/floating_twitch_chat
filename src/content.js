@@ -12,6 +12,7 @@ class Main extends React.Component {
 			compactMode: false,
 			disableOverlay: false,
 			numberOfMessages: 10,
+			chatHeight: 500,
 		};
 	}
 
@@ -26,6 +27,7 @@ class Main extends React.Component {
 					settings.numberOfMessages || this.state.numberOfMessages
 				}
 				compactMode={settings.compactMode || this.state.compactMode}
+				chatHeight={settings.chatHeight || this.state.chatHeight}
 				currentStreamer={this.props.currentStreamer}
 			/>
 		);

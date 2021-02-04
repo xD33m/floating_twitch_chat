@@ -6,7 +6,8 @@ window.onload = function () {
 		console.log(storage);
 		document.getElementById('compactMode').checked = storage.compactMode;
 		document.getElementById('disableOverlay').checked = storage.disableOverlay;
-		document.getElementById('messageNumber').value = storage.messageNumber || 10;
+		document.getElementById('chatHeight').value = storage.chatHeight || 500;
+		document.getElementById('heightValue').innerHTML = storage.chatHeight || 500;
 		let pickr = Pickr.create({
 			el: '.color-picker',
 			theme: 'nano',
@@ -48,8 +49,19 @@ document.getElementById('disableOverlay').addEventListener('click', (event) => {
 	});
 });
 
-document.getElementById('messageNumber').addEventListener('input', (event) => {
+document.getElementById('chatHeight').addEventListener('input', (event) => {
+	document.getElementById('heightValue').innerHTML = event.target.value;
 	chrome.storage.local.set({
-		messageNumber: event.target.value,
+		chatHeight: event.target.value,
 	});
+});
+
+document.getElementById('reset').addEventListener('click', (event) => {
+	chrome.storage.local.set({
+		compactMode: false,
+		disableOverlay: false,
+		bgColor: 'rgba(0,0,0,0.5)',
+		chatHeight: 500,
+	});
+	window.location.reload();
 });
