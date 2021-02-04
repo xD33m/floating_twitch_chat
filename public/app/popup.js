@@ -3,11 +3,12 @@
 
 window.onload = function () {
 	chrome.storage.local.get((storage) => {
-		console.log(storage);
 		document.getElementById('compactMode').checked = storage.compactMode;
 		document.getElementById('disableOverlay').checked = storage.disableOverlay;
 		document.getElementById('chatHeight').value = storage.chatHeight || 500;
 		document.getElementById('heightValue').innerHTML = storage.chatHeight || 500;
+		document.getElementById('chatScale').value = storage.chatScale * 10 || 10;
+		document.getElementById('scaleValue').innerHTML = storage.chatScale * 100 || 100;
 		let pickr = Pickr.create({
 			el: '.color-picker',
 			theme: 'nano',
@@ -56,12 +57,20 @@ document.getElementById('chatHeight').addEventListener('input', (event) => {
 	});
 });
 
+document.getElementById('chatScale').addEventListener('input', (event) => {
+	document.getElementById('scaleValue').innerHTML = Math.floor(event.target.value * 10);
+	chrome.storage.local.set({
+		chatScale: event.target.value / 10,
+	});
+});
+
 document.getElementById('reset').addEventListener('click', (event) => {
 	chrome.storage.local.set({
 		compactMode: false,
 		disableOverlay: false,
 		bgColor: 'rgba(0,0,0,0.5)',
 		chatHeight: 500,
+		chatScale: 1,
 	});
 	window.location.reload();
 });

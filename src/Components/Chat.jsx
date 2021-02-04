@@ -16,7 +16,7 @@ import {
 } from '../js/chat';
 import tmi from 'tmi.js';
 import ChatMessage from './ChatMessage';
-import { motion } from 'framer-motion';
+import { motion, MotionConfig, transform } from 'framer-motion';
 
 const container = {
 	hidden: { opacity: 1, scale: 0 },
@@ -38,6 +38,11 @@ const item = {
 	},
 	compact: { opacity: 1, scale: 1 },
 };
+
+const transformPoint = (top, left, scale) => ({ x, y }) => ({
+	x: (x - left) / scale,
+	y: (y - top) / scale,
+});
 
 class Chat extends Component {
 	constructor(props) {
@@ -146,7 +151,9 @@ class Chat extends Component {
 				childPos = this.chatRef.current.getBoundingClientRect(),
 				relativePos = {};
 
-			relativePos.right = Math.abs(childPos.right - parentPos.right);
+			relativePos.right = Math.abs(
+				childPos.right - parentPos.right / this.props.settings.chatScale
+			);
 			relativePos.left = Math.abs(childPos.left - parentPos.left);
 
 			const isOnRightSide = relativePos.left > relativePos.right ? true : false;
@@ -158,45 +165,57 @@ class Chat extends Component {
 		const { constraintsRef, settings } = this.props;
 		return (
 			!settings.disableOverlay && (
-				<motion.div
-					drag
-					dragConstraints={constraintsRef}
-					dragMomentum={false}
-					onDrag={() => this.isOnRightSide()}
-					className="chat"
-					style={{
-						height: settings.chatHeight
-							? `${settings.chatHeight}px`
-							: '500px',
-					}}
-					ref={this.chatRef}
+				<MotionConfig
+					transformPagePoint={
+						settings.chatScale
+							? transformPoint(0, 0, settings.chatScale)
+							: transformPoint(0, 0, 1)
+					}
 				>
 					<motion.div
-						className={
-							settings.compactMode ? 'chat-inner-compact' : 'chat-inner'
-						}
-						style={
-							this.state.isOnRightSide
-								? { alignItems: 'flex-end' }
-								: { alignItems: 'flex-start' }
-						}
-						variants={container}
-						initial="hidden"
-						animate={
-							settings.compactMode
-								? 'compact'
-								: this.state.messages.length
-								? 'visible'
-								: 'hidden'
-						}
+						drag
+						dragConstraints={constraintsRef}
+						dragMomentum={false}
+						onDrag={() => this.isOnRightSide()}
+						className="chat"
+						style={{
+							height: settings.chatHeight
+								? `${settings.chatHeight}px`
+								: '500px',
+							zoom: settings.chatScale ? settings.chatScale : '1',
+							'-moz-transform': settings.chatScale
+								? `scale(${settings.chatScale})`
+								: 'scale(1)',
+						}}
+						ref={this.chatRef}
 					>
-						{this.state.messages.map((msg, i) => (
-							<motion.div key={i} variants={item}>
-								{msg}
-							</motion.div>
-						))}
+						<motion.div
+							className={
+								settings.compactMode ? 'chat-inner-compact' : 'chat-inner'
+							}
+							style={
+								this.state.isOnRightSide
+									? { alignItems: 'flex-end' }
+									: { alignItems: 'flex-start' }
+							}
+							variants={container}
+							initial="hidden"
+							animate={
+								settings.compactMode
+									? 'compact'
+									: this.state.messages.length
+									? 'visible'
+									: 'hidden'
+							}
+						>
+							{this.state.messages.map((msg, i) => (
+								<motion.div key={i} variants={item}>
+									{msg}
+								</motion.div>
+							))}
+						</motion.div>
 					</motion.div>
-				</motion.div>
+				</MotionConfig>
 			)
 		);
 	}
