@@ -16,7 +16,7 @@ import {
 } from '../js/chat';
 import tmi from 'tmi.js';
 import ChatMessage from './ChatMessage';
-import { motion, MotionConfig, transform } from 'framer-motion';
+import { motion, MotionConfig } from 'framer-motion';
 
 const container = {
 	hidden: { opacity: 1, scale: 0 },
@@ -56,18 +56,22 @@ class Chat extends Component {
 	}
 
 	componentDidMount = () => {
-		this.client = new tmi.Client({
-			connection: { reconnect: true, secure: true },
-			channels: [this.props.currentStreamer],
-		});
-		this.client.connect();
-		this.addListeners();
+		if (!this.props.settings.disableOverlay) {
+			this.client = new tmi.Client({
+				connection: { reconnect: true, secure: true },
+				channels: [this.props.currentStreamer],
+			});
+			this.client.connect();
+			this.addListeners();
 
-		this.isOnRightSide();
+			this.isOnRightSide();
+		}
 	};
 
 	componentWillUnmount = () => {
-		this.client.disconnect();
+		if (!this.props.settings.disableOverlay) {
+			this.client.disconnect();
+		}
 	};
 
 	addListeners = () => {
@@ -190,16 +194,13 @@ class Chat extends Component {
 						ref={this.chatRef}
 					>
 						<motion.div
-							className={
-								settings.compactMode ? 'chat-inner-compact' : 'chat-inner'
-							}
 							style={
 								this.state.isOnRightSide
 									? { alignItems: 'flex-end' }
 									: { alignItems: 'flex-start' }
 							}
 							variants={container}
-							initial="hidden"
+							initial={settings.compactMode ? 'compact' : 'hidden'}
 							animate={
 								settings.compactMode
 									? 'compact'

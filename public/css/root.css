@@ -39,10 +39,6 @@ body {
 	flex-direction: column;
 }
 
-.chat-inner-compact {
-	flex-direction: column;
-}
-
 .chat-line {
 	overflow: hidden;
 	max-height: 0px;
