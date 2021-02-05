@@ -1,0 +1,88 @@
+body {
+	margin: 0;
+	padding: 0;
+	font-family: sans-serif;
+}
+
+#my-extension-root {
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	top: 0px;
+	right: 0px;
+	z-index: 2147483647;
+	pointer-events: none;
+}
+
+.App {
+	height: 100vh !important;
+	width: 100% !important;
+	margin: 0 auto;
+	pointer-events: none;
+	z-index: 2147483647;
+}
+
+.chat {
+	position: absolute;
+	width: 400px;
+	overflow: hidden;
+	right: 0;
+	padding: 10px;
+	cursor: grab;
+	display: inline-flex;
+	flex-direction: column;
+	pointer-events: all;
+}
+
+.chat-inner {
+	display: inline-flex;
+	flex-direction: column;
+}
+
+.chat-line {
+	overflow: hidden;
+	max-height: 0px;
+}
+
+.chat-line.visible {
+	max-height: 300px;
+}
+.chat-line .chat-line-inner {
+	color: white;
+	padding: 7px;
+	margin: 3px;
+	border-radius: 5px;
+	overflow-wrap: break-word;
+}
+
+.chat-line .chat-line-inner-compact {
+	color: white;
+	padding: 5px;
+	height: 100%;
+	overflow-wrap: break-word;
+}
+
+.chat-line .chat-line-inner .badges img.badge {
+	margin-right: 6px;
+	vertical-align: text-bottom;
+	width: 18px;
+	height: 18px;
+}
+
+.chat-line .chat-line-inner-compact .badges img.badge {
+	margin-right: 6px;
+	vertical-align: text-bottom;
+	width: 18px;
+	height: 18px;
+}
+
+.message img {
+	vertical-align: text-bottom;
+}
+.message img.emoji {
+	width: 20px;
+}
+
+.username {
+	font-weight: 650;
+}

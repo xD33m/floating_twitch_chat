@@ -1,0 +1,70 @@
+/* CSS für's popup in public/popup.html */
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap');
+
+body {
+	margin: 0px !important;
+}
+
+#text {
+	color: blue !important;
+	font-weight: bold;
+}
+
+#frame {
+	width: 250px;
+	padding: 10px;
+}
+
+input:focus {
+	box-shadow: none !important;
+}
+
+input[type='range'] {
+	display: inline-block !important;
+	position: absolute;
+	top: 153px;
+	right: 67px;
+}
+
+input[type='range']:active {
+	transform: none !important;
+}
+
+input[type='checkbox'] {
+	margin-bottom: 20px !important;
+}
+
+label {
+	margin-bottom: 20px !important;
+}
+
+input[type='number'] {
+	display: inline-block !important;
+	width: 40px !important;
+	height: 4px !important;
+	margin-left: 5px;
+}
+
+button {
+	padding-right: 15px !important;
+	padding-left: 15px !important;
+}
+
+.pickr {
+	display: inline-block !important;
+	position: absolute;
+	top: -13px;
+	right: -7px;
+}
+
+.pickr .pcr-button {
+	width: 35px !important;
+	height: 15px !important;
+}
+
+#name {
+	text-align: center;
+	margin-top: 0px;
+	font-family: 'Caveat', cursive;
+	font-size: 21px;
+}

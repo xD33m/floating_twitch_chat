@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" ">
+        <title>Floating Twitch Chat</title>
+        <!-- <link href="/static/css/popup.css" rel="stylesheet"> -->
+        <link href="/static/css/app.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css"/>
+	</head>
+	<body>
+        <div id="frame">
+            <p id="name"> floating twitch chat </p>
+            <input type="checkbox" id="compactMode">
+            <label for="compactMode">Compact Mode</label>
+        </br>
+            <input type="checkbox" id="disableOverlay">
+            <label for="disableOverlay">Disable Overlay</label>
+        </br>
+            <label for="pickr">Background Color:</label>
+            <div class="color-picker" id="pickr"></div>
+        </br>
+            <label for="chatHeight">Chat height:</label>
+            <input type="range" min="100" max="900" value="500" id="chatHeight"></input>
+            <span  style="position: absolute; right: 25px"><span id="heightValue"></span>px</span>
+        </br>
+        <label for="chatScale">Chat Scale:</label>
+        <input type="range" min="1" max="20" value="10" style="top: 189px" id="chatScale"></input>
+        <span  style="position: absolute; right: 25px"><span id="scaleValue"></span>%</span>
+    </br>
+            <button id="reset">Reset to default</button>
+        </div>
+        <script src="/libs/pickr.min.js"></script>
+        <script src="/app/popup.js" ></script>  
+    </body>
+</html>
