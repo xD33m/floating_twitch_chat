@@ -3,7 +3,11 @@
 	"name": "Floating Twitch Chat",
 	"version": "1.1",
 	"manifest_version": 2,
-
+	"icons": {
+		"32": "assets/chat32.png",
+		"64": "assets/chat64.png",
+		"128": "assets/chat128.png"
+	},
 	"permissions": ["storage", "*://*.twitch.tv/*", "tabs"],
 	"background": {
 		"scripts": ["app/background.js"]
