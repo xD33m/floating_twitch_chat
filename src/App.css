@@ -3,6 +3,7 @@
 
 body {
 	margin: 0px !important;
+	font-size: 12px;
 }
 
 #text {
@@ -24,6 +25,7 @@ input[type='range'] {
 	position: absolute;
 	top: 153px;
 	right: 67px;
+	width: 130px !important;
 }
 
 input[type='range']:active {
