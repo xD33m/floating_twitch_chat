@@ -51,9 +51,11 @@ class Chat extends Component {
 			messages: [],
 			isOnRightSide: true,
 			disableOverlay: props.settings.disableOverlay,
+			style: '',
 		};
 
 		this.chatRef = React.createRef();
+		this.innerChatRef = React.createRef();
 	}
 
 	componentDidMount = () => {
@@ -66,6 +68,7 @@ class Chat extends Component {
 			this.addListeners();
 
 			this.isOnRightSide();
+			this.setState({ style: getComputedStyle(this.chatRef.current) });
 		}
 	};
 
@@ -210,6 +213,7 @@ class Chat extends Component {
 									? 'visible'
 									: 'hidden'
 							}
+							ref={this.innerChatRef}
 						>
 							{this.state.messages.map((msg, i) => (
 								<motion.div key={i} variants={item}>
@@ -217,25 +221,29 @@ class Chat extends Component {
 								</motion.div>
 							))}
 						</motion.div>
-						<div
-							style={{
-								height: settings.chatHeight
-									? `${settings.chatHeight}px`
-									: '500px',
-							}}
-						></div>
-						<div
-							className={
-								this.state.isOnRightSide
-									? 'btn-right close'
-									: 'btn-left close'
-							}
-							onClick={() => {
-								this.client.disconnect();
-								this.setState({ disableOverlay: true });
-							}}
-						></div>
 					</motion.div>
+					<div
+						id="spacer"
+						style={{
+							height: this.innerChatRef.current
+								? `${settings.chatHeight}px`
+								: '500px',
+						}}
+					></div>
+					<div
+						className={
+							this.state.isOnRightSide
+								? 'btn-right close'
+								: 'btn-left close'
+						}
+						style={{
+							transform: this.state.style.transform,
+						}}
+						onClick={() => {
+							this.client.disconnect();
+							this.setState({ disableOverlay: true });
+						}}
+					></div>
 				</MotionConfig>
 			)
 		);

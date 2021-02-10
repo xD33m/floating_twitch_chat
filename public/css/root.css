@@ -102,22 +102,29 @@ body {
 	width: 32px;
 	height: 32px;
 	cursor: pointer;
-	display: none;
+	pointer-events: all;
+	opacity: 0;
 	position: relative;
 }
 
 .btn-left {
-	margin-right: auto;
-	margin-left: 0;
+	margin-left: auto;
+	margin-right: 358px;
 }
 
 .btn-right {
 	margin-left: auto;
-	margin-right: 0;
+	margin-right: 10px;
 }
 
-.chat:hover .close {
+.chat:hover + #spacer + .close {
 	display: table;
+	opacity: 1;
+}
+
+.close:hover {
+	display: table;
+	opacity: 1;
 }
 
 .close:before,
