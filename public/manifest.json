@@ -8,7 +8,14 @@
 		"64": "assets/chat64.png",
 		"128": "assets/chat128.png"
 	},
-	"permissions": ["storage", "*://*.twitch.tv/*", "tabs"],
+	"permissions": [
+		"storage",
+		"*://*.twitch.tv/*",
+		"*://*.frankerfacez.com/*",
+		"*://*.betterttv.net/*",
+		"*://*.jtvnw.net/*",
+		"tabs"
+	],
 	"background": {
 		"scripts": ["app/background.js"]
 	},

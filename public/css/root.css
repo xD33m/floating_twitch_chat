@@ -28,15 +28,23 @@ body {
 	overflow: hidden;
 	right: 0;
 	padding: 10px;
-	cursor: grab;
 	display: inline-flex;
 	flex-direction: column;
 	pointer-events: all;
 }
 
 .chat-inner {
+	cursor: grab;
+	cursor: -moz-grab;
+	cursor: -webkit-grab;
 	display: inline-flex;
 	flex-direction: column;
+}
+
+.chat-inner:active {
+	cursor: grabbing;
+	cursor: -moz-grabbing;
+	cursor: -webkit-grabbing;
 }
 
 .chat-line {
@@ -85,4 +93,45 @@ body {
 
 .username {
 	font-weight: 650;
+}
+
+.close {
+	/* position: absolute;
+	right: 32px;
+	top: 32px; */
+	width: 32px;
+	height: 32px;
+	cursor: pointer;
+	display: none;
+	position: relative;
+}
+
+.btn-left {
+	margin-right: auto;
+	margin-left: 0;
+}
+
+.btn-right {
+	margin-left: auto;
+	margin-right: 0;
+}
+
+.chat:hover .close {
+	display: table;
+}
+
+.close:before,
+.close:after {
+	position: absolute;
+	left: 15px;
+	content: ' ';
+	height: 33px;
+	width: 2px;
+	background-color: red;
+}
+.close:before {
+	transform: rotate(45deg);
+}
+.close:after {
+	transform: rotate(-45deg);
 }

@@ -50,13 +50,14 @@ class Chat extends Component {
 		this.state = {
 			messages: [],
 			isOnRightSide: true,
+			disableOverlay: props.settings.disableOverlay,
 		};
 
 		this.chatRef = React.createRef();
 	}
 
 	componentDidMount = () => {
-		if (!this.props.settings.disableOverlay) {
+		if (!this.state.disableOverlay) {
 			this.client = new tmi.Client({
 				connection: { reconnect: true, secure: true },
 				channels: [this.props.currentStreamer],
@@ -69,7 +70,7 @@ class Chat extends Component {
 	};
 
 	componentWillUnmount = () => {
-		if (!this.props.settings.disableOverlay) {
+		if (!this.state.disableOverlay) {
 			this.client.disconnect();
 		}
 	};
@@ -168,7 +169,7 @@ class Chat extends Component {
 	render() {
 		const { constraintsRef, settings } = this.props;
 		return (
-			!settings.disableOverlay && (
+			!this.state.disableOverlay && (
 				<MotionConfig
 					transformPagePoint={
 						settings.chatScale
@@ -194,6 +195,7 @@ class Chat extends Component {
 						ref={this.chatRef}
 					>
 						<motion.div
+							className={!settings.compactMode && 'chat-inner'}
 							style={
 								this.state.isOnRightSide
 									? { alignItems: 'flex-end' }
@@ -215,6 +217,24 @@ class Chat extends Component {
 								</motion.div>
 							))}
 						</motion.div>
+						<div
+							style={{
+								height: settings.chatHeight
+									? `${settings.chatHeight}px`
+									: '500px',
+							}}
+						></div>
+						<div
+							className={
+								this.state.isOnRightSide
+									? 'btn-right close'
+									: 'btn-left close'
+							}
+							onClick={() => {
+								this.client.disconnect();
+								this.setState({ disableOverlay: true });
+							}}
+						></div>
 					</motion.div>
 				</MotionConfig>
 			)
