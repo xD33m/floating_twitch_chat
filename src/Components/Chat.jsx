@@ -187,9 +187,7 @@ class Chat extends Component {
 						onDrag={() => this.isOnRightSide()}
 						className="chat"
 						style={{
-							height: settings.chatHeight
-								? `${settings.chatHeight}px`
-								: '500px',
+							height: settings.chatHeight ? `${settings.chatHeight}vh` : '50vh',
 							zoom: settings.chatScale ? settings.chatScale : '1',
 							'-moz-transform': settings.chatScale
 								? `scale(${settings.chatScale})`
@@ -223,18 +221,8 @@ class Chat extends Component {
 						</motion.div>
 					</motion.div>
 					<div
-						id="spacer"
-						style={{
-							height: this.innerChatRef.current
-								? `${settings.chatHeight}px`
-								: '500px',
-						}}
-					></div>
-					<div
 						className={
-							this.state.isOnRightSide
-								? 'btn-right close'
-								: 'btn-left close'
+							this.state.isOnRightSide ? 'btn-right close' : 'btn-left close'
 						}
 						style={{
 							transform: this.state.style.transform,

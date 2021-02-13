@@ -95,21 +95,9 @@ body {
 	font-weight: 650;
 }
 
-.close {
-	/* position: absolute;
-	right: 32px;
-	top: 32px; */
-	width: 32px;
-	height: 32px;
-	cursor: pointer;
-	pointer-events: all;
-	opacity: 0;
-	position: relative;
-}
-
 .btn-left {
 	margin-left: auto;
-	margin-right: 358px;
+	margin-right: 350px;
 }
 
 .btn-right {
@@ -117,25 +105,40 @@ body {
 	margin-right: 10px;
 }
 
-.chat:hover + #spacer + .close {
-	display: table;
-	opacity: 1;
-}
-
-.close:hover {
-	display: table;
-	opacity: 1;
+.close {
+	width: 40px;
+	height: 40px;
+	border-radius: 50px;
+	box-shadow: 0px 10 10px 10px rgba(0, 0, 0, 0.25);
+	background: rgba(0, 0, 0, 0.575);
+	position: absolute;
+	top: 20px;
+	right: 0;
+	display: block;
+	pointer-events: all;
+	opacity: 0;
+	cursor: pointer;
 }
 
 .close:before,
 .close:after {
+	content: '';
+	width: 55%;
+	height: 2px;
+	background: #fff;
 	position: absolute;
-	left: 15px;
-	content: ' ';
-	height: 33px;
-	width: 2px;
-	background-color: red;
+	top: 48%;
+	left: 22%;
 }
+
+.chat:hover + .close {
+	opacity: 1;
+}
+
+.close:hover {
+	opacity: 1;
+}
+
 .close:before {
 	transform: rotate(45deg);
 }
