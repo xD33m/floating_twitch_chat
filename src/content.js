@@ -12,7 +12,7 @@ class Main extends React.Component {
 			compactMode: false,
 			disableOverlay: false,
 			numberOfMessages: 10,
-			chatHeight: 500,
+			chatHeight: 50,
 			chatScale: 1,
 		};
 	}
