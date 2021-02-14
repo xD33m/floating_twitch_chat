@@ -1,7 +1,7 @@
 {
 	"short_name": "Floating Twitch Chat",
 	"name": "Floating Twitch Chat",
-	"version": "1.1",
+	"version": "1.2",
 	"manifest_version": 2,
 	"icons": {
 		"32": "assets/chat32.png",
@@ -22,7 +22,7 @@
 	"browser_action": {
 		"default_popup": "popup.html",
 		"default_title": "Floating Twitch Chat",
-		"chrome_style": false
+		"browser_style": false
 	},
 	"content_scripts": [
 		{
