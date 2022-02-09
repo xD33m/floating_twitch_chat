@@ -45,7 +45,7 @@ function isFullScreen() {
 
 function checkForFullScreen() {
 	chrome.runtime.sendMessage('getScreenState', (result) => {
-		if (true) {
+		if (result === 'fullscreen') {
 			// console.log('ITS FULLSCREEN POG');
 			chrome.storage.local.get((storage) => {
 				ReactDOM.render(
