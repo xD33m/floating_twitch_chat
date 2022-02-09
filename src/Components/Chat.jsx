@@ -137,11 +137,11 @@ class Chat extends Component {
 			/>
 		);
 
-		const messages =
-			this.state.messages.length > 50
-				? this.state.messages.slice(10)
-				: this.state.messages;
-
+		// const messages =
+		// 	this.state.messages.length > 50
+		// 		? this.state.messages.slice(10)
+		// 		: this.state.messages;
+		const messages = this.state.messages;
 		this.setState({ messages: [...messages, chatMessage] }, () =>
 			this.scrollToBottom()
 		);

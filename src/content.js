@@ -45,8 +45,8 @@ function isFullScreen() {
 
 function checkForFullScreen() {
 	chrome.runtime.sendMessage('getScreenState', (result) => {
-		if (result === 'fullscreen') {
-			console.log('ITS FULLSCREEN POG');
+		if (true) {
+			// console.log('ITS FULLSCREEN POG');
 			chrome.storage.local.get((storage) => {
 				ReactDOM.render(
 					<Main
@@ -57,7 +57,7 @@ function checkForFullScreen() {
 				);
 			});
 		} else {
-			console.log('no fullscreen :(');
+			// console.log('no fullscreen :(');
 			ReactDOM.unmountComponentAtNode(app);
 		}
 	});
@@ -69,7 +69,7 @@ function checkForFullScreen() {
 		clearInterval(docLoaded);
 		let hookElement = setInterval(() => {
 			let el = document.querySelector(
-				'[data-test-selector="video-player__video-container"]'
+				'.video-player__overlay'
 			);
 			if (el) {
 				el.appendChild(app);
