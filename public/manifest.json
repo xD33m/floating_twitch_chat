@@ -1,35 +1,29 @@
 {
+	"manifest_version": 3,
 	"short_name": "Floating Twitch Chat",
 	"name": "Floating Twitch Chat",
-	"version": "1.4",
-	"manifest_version": 2,
+	"description": "Overlays Twitch chat on top of the fullscreen video player.",
+	"version": "2.0",
+	"minimum_chrome_version": "88",
 	"icons": {
 		"32": "assets/chat32.png",
 		"64": "assets/chat64.png",
 		"128": "assets/chat128.png"
 	},
-	"permissions": [
-		"storage",
-		"*://*.twitch.tv/*",
-		"*://*.frankerfacez.com/*",
-		"*://*.betterttv.net/*",
-		"*://*.jtvnw.net/*"
-	],
+	"permissions": ["storage"],
 	"background": {
-		"scripts": ["app/background.js"]
+		"service_worker": "app/background.js"
 	},
-	"browser_action": {
+	"action": {
 		"default_popup": "popup.html",
-		"default_title": "Floating Twitch Chat",
-		"browser_style": false
+		"default_title": "Floating Twitch Chat"
 	},
 	"content_scripts": [
 		{
 			"matches": ["*://*.twitch.tv/*"],
-			"css": ["/css/root.css"],
-			"js": ["/static/js/content.js"],
+			"css": ["css/root.css"],
+			"js": ["static/js/content.js"],
 			"run_at": "document_idle"
 		}
-	],
-	"web_accessible_resources": ["/static/css/content.css", "/static/media/*"]
+	]
 }

@@ -1,16 +1,8 @@
-body {
-	margin: 0;
-	padding: 0;
-	font-family: sans-serif;
-}
+/* Injected into twitch.tv, so every rule here has to stay scoped to the
+ * overlay: a bare `body` rule (there used to be one) restyles Twitch itself. */
 
-#my-extension-root {
-	width: 100vw;
-	height: 100vh;
-	position: fixed;
-	top: 0px;
-	right: 0px;
-	z-index: 2147483647;
+#chat-overlay-root {
+	font-family: sans-serif;
 	pointer-events: none;
 }
 

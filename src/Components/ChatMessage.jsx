@@ -15,33 +15,31 @@ class ChatMessage extends Component {
 						compactMode ? 'chat-line-inner-compact' : 'chat-line-inner'
 					}
 					style={{
-						backgroundColor: bgColor ? bgColor : 'hsla(211, 100%, -22%, 0.5)',
+						backgroundColor: bgColor ? bgColor : 'rgba(0,0,0,0.5)',
 					}}
 				>
 					<span className="badges">
-						{badges.map((badge) => {
-							return (
-								<img
-									className="badge"
-									src={badge.url}
-									badgetype={badge.type}
-									alt={badge.type}
-								/>
-							);
-						})}
+						{badges.map((badge, i) => (
+							<img
+								key={`${badge.type}-${i}`}
+								className="badge"
+								src={badge.url}
+								alt={badge.type}
+							/>
+						))}
 					</span>
 					<span className="username" style={{ color: color }}>
 						{username}
 					</span>
 					<span className="message-colon">: </span>
 					<span className="message">
-						{message.map((msg) => {
-							if (typeof msg === 'string') {
-								return msg;
-							} else {
-								return <img src={msg.url} alt={msg.alt} />;
-							}
-						})}
+						{message.map((msg, i) =>
+							typeof msg === 'string' ? (
+								<React.Fragment key={i}>{msg}</React.Fragment>
+							) : (
+								<img key={i} src={msg.url} alt={msg.alt} title={msg.alt} />
+							)
+						)}
 					</span>
 				</div>
 			</div>
