@@ -8,7 +8,7 @@
  *   - channel id: the `room-id` IRC tag, so no Twitch API call is needed
  *   - badges:     api.ivr.fi (public Helix mirror, no client id required)
  *   - twitch emotes: the v2 emoticon CDN (v1 is deprecated)
- *   - BTTV / FFZ: their public v3 / v1 endpoints
+ *   - BTTV / FFZ / 7TV: their public v3 / v1 / v3 endpoints
  *
  * Every endpoint below answers with a permissive Access-Control-Allow-Origin,
  * so the content script can fetch them directly. Do not add custom request
@@ -27,6 +27,11 @@ export const ffzEmoteCache = {
 	lastUpdated: 0,
 	data: { global: [] },
 	urlTemplate: 'https://cdn.frankerfacez.com/emote/{{id}}/{{image}}',
+};
+export const sevenTVEmoteCache = {
+	lastUpdated: 0,
+	data: { global: [] },
+	urlTemplate: 'https://cdn.7tv.app/emote/{{id}}/{{image}}',
 };
 
 const badgeApiBase = 'https://api.ivr.fi/v2/twitch/badges/';
@@ -107,12 +112,11 @@ function findCodeOccurrences(message, code) {
 	return found;
 }
 
+// Channel emotes first: a channel can alias a code that also exists globally,
+// and the channel's version is the one chat means.
 function thirdPartyEmotesFor(cache, channel) {
-	let emotes = cache.data.global.slice(0);
-	if (channel in cache.data) {
-		emotes = emotes.concat(cache.data[channel]);
-	}
-	return emotes;
+	const channelEmotes = channel in cache.data ? cache.data[channel] : [];
+	return channelEmotes.concat(cache.data.global);
 }
 
 export function handleEmotes(channel, emotes, message) {
@@ -133,11 +137,13 @@ export function handleEmotes(channel, emotes, message) {
 		return p.concat(emoteData);
 	}, []);
 
-	// BTTV calls it `code`, FFZ calls it `name`; normalise to `code` here so
-	// addEmotes only has to deal with one shape.
-	const thirdParty = thirdPartyEmotesFor(bttvEmoteCache, channel).concat(
-		thirdPartyEmotesFor(ffzEmoteCache, channel)
-	);
+	// BTTV calls it `code`, FFZ and 7TV call it `name`; normalise to `code` here
+	// so addEmotes only has to deal with one shape. Order matters: when the same
+	// code exists in more than one provider the first one wins, and 7TV before
+	// BTTV before FFZ is what the established chat clients do.
+	const thirdParty = thirdPartyEmotesFor(sevenTVEmoteCache, channel)
+		.concat(thirdPartyEmotesFor(bttvEmoteCache, channel))
+		.concat(thirdPartyEmotesFor(ffzEmoteCache, channel));
 
 	thirdParty.forEach(({ code, name, id, type }) => {
 		const emoteCode = code || name;
@@ -203,6 +209,12 @@ export function addEmotes(data) {
 			let url = ffzEmoteCache.urlTemplate
 				.replace('{{id}}', n.id)
 				.replace('{{image}}', '1');
+			message.push({ url, alt: code });
+		} else if (type === '7tv') {
+			// 7TV serves every emote as webp, animated ones included.
+			let url = sevenTVEmoteCache.urlTemplate
+				.replace('{{id}}', n.id)
+				.replace('{{image}}', '1x.webp');
 			message.push({ url, alt: code });
 		}
 	});
@@ -315,6 +327,42 @@ export async function getFFZEmotes(channel, channelID) {
 		n.global = global;
 		n.type = ['ffz', 'emote'];
 		target.push(n);
+	});
+}
+
+/*
+ * 7TV. Most large channels have moved here, so without it a lot of chat renders
+ * as bare text. A channel's response also carries its whole active emote set,
+ * which for a big channel is a couple of MB -- it is fetched once per channel.
+ */
+export async function getSevenTVEmotes(channel, channelID) {
+	const global = !(channelID && channel);
+	const url = global
+		? 'https://7tv.io/v3/emote-sets/global'
+		: `https://7tv.io/v3/users/twitch/${encodeURIComponent(channelID)}`;
+
+	// 404 here just means the channel never linked a 7TV account.
+	const response = await getJSON(url);
+	if (!response) return;
+
+	const set = global ? response : response.emote_set;
+	const emotes = (set && set.emotes) || [];
+	if (!emotes.length) return;
+
+	if (!global && channel in sevenTVEmoteCache.data === false) {
+		sevenTVEmoteCache.data[channel] = [];
+	}
+	const target = global
+		? sevenTVEmoteCache.data.global
+		: sevenTVEmoteCache.data[channel];
+	emotes.forEach((n) => {
+		// `name` is the channel's alias for the emote, `data.name` the original.
+		target.push({
+			id: n.id,
+			name: n.name,
+			global,
+			type: ['7tv', 'emote'],
+		});
 	});
 }
 

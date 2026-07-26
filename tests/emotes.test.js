@@ -8,17 +8,20 @@ import {
 	handleEmotes,
 	prepareBadges,
 	resolveColor,
+	sevenTVEmoteCache,
 	twitchBadgeCache,
 } from '../src/js/chat.js';
 
 function resetCaches() {
 	bttvEmoteCache.data = { global: [] };
 	ffzEmoteCache.data = { global: [] };
+	sevenTVEmoteCache.data = { global: [] };
 	twitchBadgeCache.data = { global: {} };
 }
 
 const bttv = (code, id) => ({ code, id, type: ['bttv', 'emote'] });
 const ffz = (name, id) => ({ name, id, type: ['ffz', 'emote'] });
+const seventv = (name, id) => ({ name, id, type: ['7tv', 'emote'] });
 
 // Render the pipeline output the way ChatMessage does, so a test failure reads
 // like the chat line the user would have seen.
@@ -52,19 +55,59 @@ test('bttv and ffz emotes are matched by code and get the right cdn url', () => 
 	assert.equal(parts[2].url, 'https://cdn.frankerfacez.com/emote/ffz-id/1');
 });
 
+test('7tv emotes are matched by name and get the right cdn url', () => {
+	resetCaches();
+	sevenTVEmoteCache.data.global.push(seventv('GAMBA', '01F6MZGCNR000255K6PVAV8SP4'));
+
+	const parts = addEmotes(handleEmotes('somechan', {}, 'time for GAMBA'));
+
+	assert.equal(flatten(parts), 'time for [GAMBA]');
+	assert.equal(
+		parts[1].url,
+		'https://cdn.7tv.app/emote/01F6MZGCNR000255K6PVAV8SP4/1x.webp'
+	);
+});
+
 test('channel specific third party emotes are used for that channel only', () => {
 	resetCaches();
 	bttvEmoteCache.data.somechan = [bttv('CHANEMOTE', 'chan-id')];
 	ffzEmoteCache.data.somechan = [ffz('FFZCHAN', 'ffz-chan-id')];
+	sevenTVEmoteCache.data.somechan = [seventv('STVCHAN', 'stv-chan-id')];
 
 	assert.equal(
-		flatten(addEmotes(handleEmotes('somechan', {}, 'CHANEMOTE FFZCHAN'))),
-		'[CHANEMOTE] [FFZCHAN]'
+		flatten(addEmotes(handleEmotes('somechan', {}, 'CHANEMOTE FFZCHAN STVCHAN'))),
+		'[CHANEMOTE] [FFZCHAN] [STVCHAN]'
 	);
 	assert.equal(
-		flatten(addEmotes(handleEmotes('otherchan', {}, 'CHANEMOTE FFZCHAN'))),
-		'CHANEMOTE FFZCHAN'
+		flatten(addEmotes(handleEmotes('otherchan', {}, 'CHANEMOTE FFZCHAN STVCHAN'))),
+		'CHANEMOTE FFZCHAN STVCHAN'
 	);
+});
+
+test('when providers share a code, 7tv wins and twitch beats all of them', () => {
+	resetCaches();
+	sevenTVEmoteCache.data.global.push(seventv('Shared', 'stv-id'));
+	bttvEmoteCache.data.global.push(bttv('Shared', 'bttv-id'));
+	ffzEmoteCache.data.global.push(ffz('Shared', 'ffz-id'));
+
+	const [stv] = addEmotes(handleEmotes('somechan', {}, 'Shared'));
+	assert.equal(stv.url, 'https://cdn.7tv.app/emote/stv-id/1x.webp');
+
+	// A twitch emote tag covering the same characters takes precedence.
+	const [twitch] = addEmotes(handleEmotes('somechan', { 25: ['0-5'] }, 'Shared'));
+	assert.equal(
+		twitch.url,
+		'https://static-cdn.jtvnw.net/emoticons/v2/25/default/dark/1.0'
+	);
+});
+
+test('a channel emote overrides a global one with the same code', () => {
+	resetCaches();
+	sevenTVEmoteCache.data.global.push(seventv('Alias', 'global-id'));
+	sevenTVEmoteCache.data.somechan = [seventv('Alias', 'channel-id')];
+
+	const [rendered] = addEmotes(handleEmotes('somechan', {}, 'Alias'));
+	assert.equal(rendered.url, 'https://cdn.7tv.app/emote/channel-id/1x.webp');
 });
 
 test('emote codes are only matched as whole words', () => {

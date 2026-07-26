@@ -9,8 +9,10 @@ import {
 	handleEmotes,
 	addEmotes,
 	getFFZEmotes,
+	getSevenTVEmotes,
 	resolveColor,
 	ffzEmoteCache,
+	sevenTVEmoteCache,
 } from '../js/chat';
 import tmi from 'tmi.js';
 import ChatMessage from './ChatMessage';
@@ -96,6 +98,7 @@ class Chat extends Component {
 		this.client.on('connected', () => {
 			getBTTVEmotes().catch(warn('global BTTV emotes'));
 			getFFZEmotes().catch(warn('global FFZ emotes'));
+			getSevenTVEmotes().catch(warn('global 7TV emotes'));
 			getBadges()
 				.then((badges) => (twitchBadgeCache.data.global = badges))
 				.catch(warn('global badges'));
@@ -105,6 +108,7 @@ class Chat extends Component {
 			twitchBadgeCache.data = { global: {} };
 			bttvEmoteCache.data = { global: [] };
 			ffzEmoteCache.data = { global: [] };
+			sevenTVEmoteCache.data = { global: [] };
 			this.loadedChannels.clear();
 		});
 
@@ -125,6 +129,7 @@ class Chat extends Component {
 			let chan = getChannel(channel);
 			delete bttvEmoteCache.data[chan];
 			delete ffzEmoteCache.data[chan];
+			delete sevenTVEmoteCache.data[chan];
 			delete twitchBadgeCache.data[chan];
 			this.loadedChannels.delete(chan);
 		});
@@ -139,6 +144,7 @@ class Chat extends Component {
 
 		getBTTVEmotes(chan, roomId).catch(warn(`BTTV emotes for ${chan}`));
 		getFFZEmotes(chan, roomId).catch(warn(`FFZ emotes for ${chan}`));
+		getSevenTVEmotes(chan, roomId).catch(warn(`7TV emotes for ${chan}`));
 		getBadges(roomId)
 			.then((badges) => (twitchBadgeCache.data[chan] = badges))
 			.catch(warn(`badges for ${chan}`));

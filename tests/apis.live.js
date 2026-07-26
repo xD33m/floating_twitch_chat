@@ -15,7 +15,9 @@ import {
 	getBTTVEmotes,
 	getBadges,
 	getFFZEmotes,
+	getSevenTVEmotes,
 	handleEmotes,
+	sevenTVEmoteCache,
 	twitchBadgeCache,
 } from '../src/js/chat.js';
 import { assertIsImage } from './helpers.js';
@@ -24,6 +26,10 @@ import { assertIsImage } from './helpers.js';
 // badges configured, so the per channel lookups have something to find.
 const CHANNEL = 'forsen';
 const CHANNEL_ID = '22484632';
+
+// forsen has no 7TV account linked, so the 7TV channel lookup needs its own.
+const SEVENTV_CHANNEL = 'xqc';
+const SEVENTV_CHANNEL_ID = '71092938';
 
 test('global twitch badges resolve to real images', async () => {
 	const badges = await getBadges();
@@ -84,6 +90,36 @@ test('channel FFZ emotes load and render to a real image', async () => {
 	assert.ok(emotes.length > 0, `no FFZ emotes for ${CHANNEL}`);
 	const [rendered] = addEmotes(handleEmotes(CHANNEL, {}, emotes[0].name));
 	await assertIsImage(rendered.url);
+});
+
+test('global 7TV emotes load and render to a real image', async () => {
+	sevenTVEmoteCache.data = { global: [] };
+	await getSevenTVEmotes();
+
+	assert.ok(sevenTVEmoteCache.data.global.length > 0, 'no global 7TV emotes');
+	const emote = sevenTVEmoteCache.data.global[0];
+	const [rendered] = addEmotes(handleEmotes(CHANNEL, {}, emote.name));
+	assert.equal(rendered.alt, emote.name);
+	await assertIsImage(rendered.url);
+});
+
+test('channel 7TV emotes load and render to a real image', async () => {
+	sevenTVEmoteCache.data = { global: [] };
+	await getSevenTVEmotes(SEVENTV_CHANNEL, SEVENTV_CHANNEL_ID);
+
+	const emotes = sevenTVEmoteCache.data[SEVENTV_CHANNEL] || [];
+	assert.ok(emotes.length > 0, `no 7TV emotes for ${SEVENTV_CHANNEL}`);
+	const [rendered] = addEmotes(
+		handleEmotes(SEVENTV_CHANNEL, {}, emotes[0].name)
+	);
+	await assertIsImage(rendered.url);
+});
+
+test('a channel with no 7TV account is not an error', async () => {
+	sevenTVEmoteCache.data = { global: [] };
+	// forsen has no 7TV account linked, so this 404s.
+	await getSevenTVEmotes(CHANNEL, CHANNEL_ID);
+	assert.equal(sevenTVEmoteCache.data[CHANNEL], undefined);
 });
 
 test('a twitch emote id renders to a real image on the v2 cdn', async () => {

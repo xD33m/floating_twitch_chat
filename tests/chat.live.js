@@ -20,18 +20,20 @@ import {
 	getBadges,
 	getChannel,
 	getFFZEmotes,
+	getSevenTVEmotes,
 	handleEmotes,
 	prepareBadges,
 	resolveColor,
+	sevenTVEmoteCache,
 	twitchBadgeCache,
 } from '../src/js/chat.js';
 import { checkImage } from './helpers.js';
 
-// Channels with BTTV/FFZ emotes configured, tried in order, so the test does not
-// depend on one streamer being live and one stretch of chat happening to contain
-// an emote. Chat stays reachable when a channel is offline, but only a busy one
-// produces messages within the time budget.
-const CHANNELS = ['forsen', 'sodapoppin', 'pokelawls', 'summit1g', 'jynxzi'];
+// Channels with third party emotes configured, tried in order, so the test does
+// not depend on one streamer being live and one stretch of chat happening to
+// contain an emote. Chat stays reachable when a channel is offline, but only a
+// busy one produces messages within the time budget.
+const CHANNELS = ['forsen', 'xqc', 'sodapoppin', 'pokelawls', 'summit1g'];
 const COLLECT_MS = 25000;
 const WANTED_MESSAGES = 40;
 
@@ -101,6 +103,7 @@ test('real twitch chat renders with badges and emotes', async (t) => {
 		twitchBadgeCache.data = { global: {} };
 		bttvEmoteCache.data = { global: [] };
 		ffzEmoteCache.data = { global: [] };
+		sevenTVEmoteCache.data = { global: [] };
 
 		const chan = getChannel(candidate);
 		const idClient = newClient(candidate);
@@ -117,14 +120,16 @@ test('real twitch chat renders with badges and emotes', async (t) => {
 		twitchBadgeCache.data[chan] = await getBadges(id);
 		await getBTTVEmotes();
 		await getFFZEmotes();
+		await getSevenTVEmotes();
 		await getBTTVEmotes(chan, id);
 		await getFFZEmotes(chan, id);
+		await getSevenTVEmotes(chan, id);
+		const counts = (cache) =>
+			`${cache.data.global.length}+${(cache.data[chan] || []).length}`;
 		t.diagnostic(
-			`${candidate} (room-id ${id}): bttv global=${
-				bttvEmoteCache.data.global.length
-			} channel=${(bttvEmoteCache.data[chan] || []).length}, ffz global=${
-				ffzEmoteCache.data.global.length
-			} channel=${(ffzEmoteCache.data[chan] || []).length}`
+			`${candidate} (room-id ${id}) global+channel emotes: bttv ${counts(
+				bttvEmoteCache
+			)}, ffz ${counts(ffzEmoteCache)}, 7tv ${counts(sevenTVEmoteCache)}`
 		);
 
 		const collected = await collectMessages(newClient(candidate), chan);
