@@ -1,20 +1,61 @@
 /* CSS für's popup in public/popup.html.
  * The Caveat webfont is a <link> in popup.html: this file is concatenated after
- * the vendored stylesheets, and an @import is only valid at the very top. */
+ * the vendored stylesheets, and an @import is only valid at the very top.
+ *
+ * The !important rules are here to win against water.css, which styles bare
+ * form elements. Rows lay themselves out -- the controls used to be pinned with
+ * hardcoded `top` offsets, so adding or removing a line detached every slider
+ * from its label. */
 
 body {
+	/* water.css puts padding on the body, which pushed the frame wider than the
+	 * popup and clipped the values on the right. */
 	margin: 0px !important;
+	padding: 0px !important;
 	font-size: 12px;
 }
 
-#text {
-	color: blue !important;
-	font-weight: bold;
+#frame {
+	box-sizing: border-box;
+	width: 270px;
+	padding: 12px;
 }
 
-#frame {
-	width: 250px;
-	padding: 10px;
+#name {
+	text-align: center;
+	margin: 0 0 4px;
+	font-family: 'Caveat', cursive;
+	font-size: 21px;
+}
+
+#hint {
+	margin: 0 0 16px;
+	text-align: center;
+	font-size: 11px;
+	line-height: 1.45;
+	opacity: 0.7;
+}
+
+#hint kbd {
+	font-size: 10px;
+	padding: 1px 4px;
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 16px;
+}
+
+.row label {
+	margin: 0 !important;
+	flex: none;
+}
+
+.row input[type='checkbox'] {
+	margin: 0 !important;
+	flex: none;
 }
 
 input:focus {
@@ -22,30 +63,19 @@ input:focus {
 }
 
 input[type='range'] {
-	display: inline-block !important;
-	position: absolute;
-	top: 153px;
-	right: 67px;
-	width: 130px !important;
+	display: block !important;
+	margin: 0 0 0 auto !important;
+	width: 120px !important;
 }
 
 input[type='range']:active {
 	transform: none !important;
 }
 
-input[type='checkbox'] {
-	margin-bottom: 20px !important;
-}
-
-label {
-	margin-bottom: 20px !important;
-}
-
-input[type='number'] {
-	display: inline-block !important;
-	width: 40px !important;
-	height: 4px !important;
-	margin-left: 5px;
+.value {
+	flex: none;
+	width: 34px;
+	text-align: right;
 }
 
 button {
@@ -53,21 +83,15 @@ button {
 	padding-left: 15px !important;
 }
 
+/* Pickr replaces #pickr with its own .pickr wrapper, so this has to sit on the
+ * wrapper rather than on the placeholder. */
 .pickr {
-	display: inline-block !important;
-	position: absolute;
-	top: -13px;
-	right: -7px;
+	display: block !important;
+	margin-left: auto;
+	line-height: 0;
 }
 
 .pickr .pcr-button {
 	width: 35px !important;
 	height: 15px !important;
-}
-
-#name {
-	text-align: center;
-	margin-top: 0px;
-	font-family: 'Caveat', cursive;
-	font-size: 21px;
 }
