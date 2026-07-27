@@ -1,11 +1,8 @@
 import path from 'node:path';
 import CopyPlugin from 'copy-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
 const root = import.meta.dirname;
-
-// Some of these packages hide their dist files behind an "exports" map, so
-// import/require of the exact file is not an option.
-const vendored = (relative) => path.join(root, 'node_modules', relative);
 
 export default (_env, argv) => {
 	const isProduction = argv.mode === 'production';
@@ -22,6 +19,7 @@ export default (_env, argv) => {
 		},
 		entry: {
 			content: './src/content.js',
+			popup: './src/popup/index.js',
 		},
 		output: {
 			path: path.resolve(root, 'build'),
@@ -42,26 +40,16 @@ export default (_env, argv) => {
 					// extensions on every relative import, which we do not want here.
 					resolve: { fullySpecified: false },
 				},
+				{
+					test: /\.css$/,
+					use: [MiniCssExtractPlugin.loader, 'css-loader'],
+				},
 			],
 		},
 		plugins: [
-			new CopyPlugin({
-				patterns: [
-					{ from: 'public', to: '.' },
-					// The popup used to pull these two from a CDN. MV3 forbids remote
-					// code, and a popup that needs the network to look right is no fun,
-					// so they ship with the extension instead.
-					{
-						from: vendored('@simonwep/pickr/dist/pickr.min.js'),
-						to: 'libs/pickr.min.js',
-					},
-					{
-						from: vendored('@simonwep/pickr/dist/themes/nano.min.css'),
-						to: 'libs/pickr.nano.min.css',
-					},
-					{ from: vendored('water.css/out/dark.css'), to: 'libs/water.dark.css' },
-				],
-			}),
+			new MiniCssExtractPlugin({ filename: 'static/css/[name].css' }),
+			// Everything in public/ is already in its final shape.
+			new CopyPlugin({ patterns: [{ from: 'public', to: '.' }] }),
 		],
 		performance: false,
 		optimization: {

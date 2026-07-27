@@ -1,5 +1,13 @@
 /* global chrome */
-/* global Pickr */
+
+// Bundled rather than loaded from a CDN: MV3 forbids remote code, and a popup
+// that needs the network to look right is no fun. They are imported (not copied
+// out of node_modules) so the build does not care how the package manager lays
+// its store out.
+import 'water.css/out/dark.css';
+import '@simonwep/pickr/dist/themes/nano.min.css';
+import './popup.css';
+import Pickr from '@simonwep/pickr';
 
 const DEFAULTS = {
 	compactMode: false,

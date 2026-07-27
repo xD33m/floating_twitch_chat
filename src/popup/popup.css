@@ -1,5 +1,6 @@
-/* CSS für's popup in public/popup.html */
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap');
+/* CSS für's popup in public/popup.html.
+ * The Caveat webfont is a <link> in popup.html: this file is concatenated after
+ * the vendored stylesheets, and an @import is only valid at the very top. */
 
 body {
 	margin: 0px !important;
