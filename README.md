@@ -5,40 +5,47 @@ player, so you can read chat without leaving fullscreen.
 
 ## Build
 
+This project uses [pnpm](https://pnpm.io). `packageManager` in `package.json`
+pins it, so with corepack enabled the right version is used automatically.
+
 ```bash
-npm install
-npm run build
+pnpm install
+pnpm build
 ```
 
 The loadable extension is written to `build/`. Load it via
 `chrome://extensions` → _Developer mode_ → _Load unpacked_ → pick `build/`.
 
-`npm run watch` rebuilds on change (reload the extension in
-`chrome://extensions` afterwards).
+`pnpm watch` rebuilds on change (reload the extension in `chrome://extensions`
+afterwards).
 
 ## Tests
 
 ```bash
-npm test            # offline: emote/badge parsing and rendering
-npm run test:live   # hits the real Twitch/BTTV/FFZ/7TV endpoints and Twitch IRC
+pnpm test        # offline: emote/badge parsing and rendering
+pnpm test:live   # hits the real Twitch/BTTV/FFZ/7TV endpoints and Twitch IRC
 ```
 
-`npm run test:live` needs network access. It is the check that catches an
-upstream API disappearing, which is what broke emotes and badges before.
+`pnpm test:live` needs network access. It is the check that catches an upstream
+API disappearing, which is what broke emotes and badges before.
 
 ## Layout
 
-| Path                    | What it is                                                 |
-| ----------------------- | ---------------------------------------------------------- |
-| `src/content.js`        | Content script: mounts/unmounts the overlay on the player  |
-| `src/Components/`       | The React overlay itself                                   |
-| `src/js/chat.js`        | Emote (Twitch, BTTV, FFZ, 7TV) and badge fetching, matching and URL building |
-| `public/manifest.json`  | Manifest V3                                                |
-| `public/app/background.js` | Service worker; only reports the window's fullscreen state |
-| `public/popup.html` + `public/app/popup.js` | The settings popup                     |
+| Path                       | What it is                                                                   |
+| -------------------------- | ---------------------------------------------------------------------------- |
+| `src/content.js`           | Content script: mounts/unmounts the overlay on the player                    |
+| `src/Components/`          | The React overlay itself                                                     |
+| `src/js/chat.js`           | Emote (Twitch, BTTV, FFZ, 7TV) and badge fetching, matching and URL building  |
+| `src/popup/`               | The settings popup: script and styles                                        |
+| `public/manifest.json`     | Manifest V3                                                                  |
+| `public/app/background.js` | Service worker; only reports the window's fullscreen state                   |
+| `public/popup.html`        | Popup markup; loads the bundled `static/js/popup.js` and `static/css/popup.css` |
 
-Everything under `public/` is copied into `build/` verbatim; only `src/` is
-bundled.
+Everything under `public/` is copied into `build/` verbatim; `src/` is bundled
+into `build/static/`. Nothing in the build reads out of `node_modules` by path,
+so it works the same under pnpm, npm or Yarn PnP — the popup's third party
+stylesheets (water.css, Pickr's nano theme) are `import`ed and bundled, not
+copied.
 
 ## Notes on the third party APIs
 
