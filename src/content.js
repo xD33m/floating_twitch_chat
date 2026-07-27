@@ -1,91 +1,161 @@
-/*global chrome*/
+/* global chrome */
 /* src/content.js */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 
-class Main extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			bgColor: 'hsla(211, 100%, -22%, 0.5)',
-			compactMode: false,
-			disableOverlay: false,
-			numberOfMessages: 10,
-			chatHeight: 50,
-			chatScale: 1,
-		};
-	}
+const DEFAULTS = {
+	bgColor: 'rgba(0,0,0,0.5)',
+	compactMode: false,
+	disableOverlay: false,
+	numberOfMessages: 10,
+	chatHeight: 50,
+	chatScale: 1,
+};
 
-	render() {
-		const { settings } = this.props;
-		console.log('seetings', settings);
-		return (
-			<App
-				bgColor={settings.bgColor || this.state.bgColor}
-				disableOverlay={settings.disableOverlay || this.state.disableOverlay}
-				numberOfMessages={
-					settings.numberOfMessages || this.state.numberOfMessages
-				}
-				compactMode={settings.compactMode || this.state.compactMode}
-				chatHeight={settings.chatHeight || this.state.chatHeight}
-				chatScale={settings.chatScale || this.state.chatScale}
-				currentStreamer={this.props.currentStreamer}
-			/>
-		);
-	}
+function Main({ settings, currentStreamer }) {
+	return (
+		<App
+			bgColor={settings.bgColor || DEFAULTS.bgColor}
+			disableOverlay={settings.disableOverlay || DEFAULTS.disableOverlay}
+			numberOfMessages={settings.numberOfMessages || DEFAULTS.numberOfMessages}
+			compactMode={settings.compactMode || DEFAULTS.compactMode}
+			chatHeight={settings.chatHeight || DEFAULTS.chatHeight}
+			chatScale={settings.chatScale || DEFAULTS.chatScale}
+			currentStreamer={currentStreamer}
+		/>
+	);
 }
 
 const app = document.createElement('div');
 app.id = 'chat-overlay-root';
 
-function isFullScreen() {
-	setTimeout(checkForFullScreen, 100);
+const PLAYER_OVERLAY_SELECTOR = '.video-player__overlay';
+
+// twitch.tv/<something> is only a channel for a subset of top level paths.
+const RESERVED_PATHS = new Set([
+	'directory',
+	'downloads',
+	'drops',
+	'friends',
+	'jobs',
+	'moderator',
+	'p',
+	'popout',
+	'prime',
+	'search',
+	'settings',
+	'store',
+	'subscriptions',
+	'team',
+	'turbo',
+	'u',
+	'videos',
+	'wallet',
+]);
+
+function currentStreamer() {
+	const segments = window.location.pathname.split('/').filter(Boolean);
+	if (segments.length !== 1) {
+		return null;
+	}
+	const [name] = segments;
+	if (RESERVED_PATHS.has(name.toLowerCase()) || !/^[\w]+$/.test(name)) {
+		return null;
+	}
+	return name;
 }
 
-function checkForFullScreen() {
-	chrome.runtime.sendMessage('getScreenState', (result) => {
-		if (result === 'fullscreen') {
-			// console.log('ITS FULLSCREEN POG');
-			chrome.storage.local.get((storage) => {
-				ReactDOM.render(
-					<Main
-						settings={storage}
-						currentStreamer={window.location.pathname.slice(1)}
-					/>,
-					app
-				);
+// chrome.windows is not reachable from a content script, so the service worker
+// answers this. It can be asleep or gone (extension reloaded/updated), in which
+// case we simply report "not fullscreen" instead of throwing.
+function getScreenState() {
+	return new Promise((resolve) => {
+		try {
+			chrome.runtime.sendMessage('getScreenState', (state) => {
+				resolve(chrome.runtime.lastError ? null : state);
 			});
-		} else {
-			// console.log('no fullscreen :(');
-			ReactDOM.unmountComponentAtNode(app);
+		} catch (error) {
+			resolve(null);
 		}
 	});
 }
 
-(() => {
-	var docLoaded = setInterval(function () {
-		if (document.readyState !== 'complete') return;
-		clearInterval(docLoaded);
-		let hookElement = setInterval(() => {
-			let el = document.querySelector(
-				'.video-player__overlay'
-			);
-			if (el) {
-				el.appendChild(app);
-				clearInterval(hookElement);
-				isFullScreen();
-			} else {
-				return;
-			}
-		}, 30);
+function getSettings() {
+	return new Promise((resolve) => {
+		try {
+			chrome.storage.local.get((storage) => {
+				resolve(chrome.runtime.lastError ? {} : storage || {});
+			});
+		} catch (error) {
+			resolve({});
+		}
+	});
+}
 
-		window.addEventListener(
-			'resize',
-			() => {
-				isFullScreen();
-			},
-			false
-		);
-	}, 30);
-})();
+let mountedFor = null;
+
+function unmount() {
+	if (mountedFor !== null) {
+		ReactDOM.unmountComponentAtNode(app);
+		mountedFor = null;
+	}
+}
+
+let syncing = false;
+
+async function sync() {
+	if (syncing) {
+		return;
+	}
+	syncing = true;
+	try {
+		const streamer = currentStreamer();
+		const state = await getScreenState();
+		if (!streamer || state !== 'fullscreen') {
+			unmount();
+			return;
+		}
+		if (mountedFor === streamer) {
+			return;
+		}
+		// Channel changed underneath us: tear the old chat client down first.
+		unmount();
+		const settings = await getSettings();
+		ReactDOM.render(<Main settings={settings} currentStreamer={streamer} />, app);
+		mountedFor = streamer;
+	} finally {
+		syncing = false;
+	}
+}
+
+let lastPath = null;
+
+// Twitch is a single page app: the player overlay is thrown away and rebuilt on
+// navigation, so keep checking instead of attaching once and hoping for the
+// best. The DOM query is cheap; sync() (which wakes the service worker) only
+// runs when the path or the attachment actually changed.
+function watch() {
+	setInterval(() => {
+		const overlay = document.querySelector(PLAYER_OVERLAY_SELECTOR);
+		const path = window.location.pathname;
+		let changed = path !== lastPath;
+		lastPath = path;
+
+		if (overlay && app.parentElement !== overlay) {
+			overlay.appendChild(app);
+			changed = true;
+		} else if (!overlay && mountedFor !== null) {
+			unmount();
+		}
+
+		if (changed) {
+			sync();
+		}
+	}, 500);
+
+	window.addEventListener('resize', () => sync(), false);
+	document.addEventListener('fullscreenchange', () => sync(), false);
+}
+
+watch();

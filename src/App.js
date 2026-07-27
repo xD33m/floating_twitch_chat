@@ -1,7 +1,4 @@
-/*global chrome*/
-
 import React, { Component } from 'react';
-import './App.css';
 import { motion } from 'framer-motion';
 import Chat from './Components/Chat';
 

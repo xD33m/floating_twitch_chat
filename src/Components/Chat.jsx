@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
-import '../App.css';
 import {
 	getBTTVEmotes,
 	twitchBadgeCache,
 	bttvEmoteCache,
 	getBadges,
-	twitchNameToUser,
 	getChannel,
 	prepareBadges,
 	handleEmotes,
 	addEmotes,
 	getFFZEmotes,
+	getSevenTVEmotes,
 	resolveColor,
 	ffzEmoteCache,
+	sevenTVEmoteCache,
 } from '../js/chat';
 import tmi from 'tmi.js';
 import ChatMessage from './ChatMessage';
@@ -39,10 +39,17 @@ const item = {
 	compact: { opacity: 1, scale: 1 },
 };
 
+// The overlay only ever shows the last handful of lines, but nothing used to
+// drop the older ones, so a long stream kept growing the DOM forever.
+const MAX_MESSAGES = 100;
+
 const transformPoint = (top, left, scale) => ({ x, y }) => ({
 	x: (x - left) / scale,
 	y: (y - top) / scale,
 });
+
+const warn = (what) => (error) =>
+	console.warn(`[floating-twitch-chat] could not load ${what}:`, error);
 
 class Chat extends Component {
 	constructor(props) {
@@ -56,6 +63,9 @@ class Chat extends Component {
 
 		this.chatRef = React.createRef();
 		this.innerChatRef = React.createRef();
+		this.nextMessageId = 0;
+		// Channels whose BTTV/FFZ/badge data we already requested.
+		this.loadedChannels = new Set();
 	}
 
 	componentDidMount = () => {
@@ -64,7 +74,7 @@ class Chat extends Component {
 				connection: { reconnect: true, secure: true },
 				channels: [this.props.currentStreamer],
 			});
-			this.client.connect();
+			this.client.connect().catch(warn('the Twitch chat connection'));
 			this.addListeners();
 
 			this.isOnRightSide();
@@ -73,40 +83,43 @@ class Chat extends Component {
 	};
 
 	componentWillUnmount = () => {
-		if (!this.state.disableOverlay) {
-			this.client.disconnect();
+		this.disconnect();
+	};
+
+	// tmi.js rejects when the socket is already closed, e.g. when the close button
+	// disconnected us and the overlay is unmounted afterwards.
+	disconnect = () => {
+		if (this.client) {
+			this.client.disconnect().catch(() => {});
 		}
 	};
 
 	addListeners = () => {
 		this.client.on('connected', () => {
-			getBTTVEmotes(); // load globals
-			// getFFZEmotes();
-			getBadges().then((badges) => (twitchBadgeCache.data.global = badges));
+			getBTTVEmotes().catch(warn('global BTTV emotes'));
+			getFFZEmotes().catch(warn('global FFZ emotes'));
+			getSevenTVEmotes().catch(warn('global 7TV emotes'));
+			getBadges()
+				.then((badges) => (twitchBadgeCache.data.global = badges))
+				.catch(warn('global badges'));
 		});
 
 		this.client.on('disconnected', () => {
 			twitchBadgeCache.data = { global: {} };
 			bttvEmoteCache.data = { global: [] };
 			ffzEmoteCache.data = { global: [] };
+			sevenTVEmoteCache.data = { global: [] };
+			this.loadedChannels.clear();
 		});
 
 		this.client.on('message', this.handleMessage);
 		this.client.on('cheer', this.handleMessage);
 
-		this.client.on('join', (channel, username, self) => {
-			if (!self) {
-				return;
-			}
-			let chan = getChannel(channel);
-
-			twitchNameToUser(chan)
-				.then((user) => {
-					getBTTVEmotes(chan, user._id);
-					getFFZEmotes(user._id);
-					return getBadges(user._id);
-				})
-				.then((badges) => (twitchBadgeCache.data[chan] = badges));
+		// The channel id used to come from the Kraken users endpoint, which no
+		// longer exists. IRC already tells us: ROOMSTATE is sent right after the
+		// join, and every message carries the same `room-id` tag as a fallback.
+		this.client.on('roomstate', (channel, state) => {
+			this.loadChannelData(channel, state['room-id']);
 		});
 
 		this.client.on('part', (channel, username, self) => {
@@ -115,39 +128,57 @@ class Chat extends Component {
 			}
 			let chan = getChannel(channel);
 			delete bttvEmoteCache.data[chan];
+			delete ffzEmoteCache.data[chan];
+			delete sevenTVEmoteCache.data[chan];
+			delete twitchBadgeCache.data[chan];
+			this.loadedChannels.delete(chan);
 		});
+	};
+
+	loadChannelData = (channel, roomId) => {
+		const chan = getChannel(channel);
+		if (!roomId || this.loadedChannels.has(chan)) {
+			return;
+		}
+		this.loadedChannels.add(chan);
+
+		getBTTVEmotes(chan, roomId).catch(warn(`BTTV emotes for ${chan}`));
+		getFFZEmotes(chan, roomId).catch(warn(`FFZ emotes for ${chan}`));
+		getSevenTVEmotes(chan, roomId).catch(warn(`7TV emotes for ${chan}`));
+		getBadges(roomId)
+			.then((badges) => (twitchBadgeCache.data[chan] = badges))
+			.catch(warn(`badges for ${chan}`));
 	};
 
 	handleMessage = (channel, data, message, fromSelf) => {
 		let chan = getChannel(channel);
+		this.loadChannelData(channel, data['room-id']);
 		let username = data['display-name'] || data.username;
 		if (/[^\w]/g.test(username)) {
 			username += ` (${data.username})`;
 		}
 		data.name = username;
-		let badges = prepareBadges(chan, data);
-		let finalMessage = handleEmotes(chan, data.emotes || {}, message);
-		let chatMessage = (
-			<ChatMessage
-				username={username}
-				message={addEmotes(finalMessage)}
-				badges={badges}
-				color={resolveColor(channel, data.username, data.color)}
-				settings={this.props.settings}
-			/>
-		);
 
-		// const messages =
-		// 	this.state.messages.length > 50
-		// 		? this.state.messages.slice(10)
-		// 		: this.state.messages;
-		const messages = this.state.messages;
-		this.setState({ messages: [...messages, chatMessage] }, () =>
-			this.scrollToBottom()
+		const chatMessage = {
+			id: this.nextMessageId++,
+			username,
+			message: addEmotes(handleEmotes(chan, data.emotes || {}, message)),
+			badges: prepareBadges(chan, data),
+			color: resolveColor(channel, data.username, data.color),
+		};
+
+		this.setState(
+			({ messages }) => ({
+				messages: [...messages, chatMessage].slice(-MAX_MESSAGES),
+			}),
+			() => this.scrollToBottom()
 		);
 	};
 
 	scrollToBottom = () => {
+		if (!this.chatRef.current) {
+			return;
+		}
 		const scroll =
 			this.chatRef.current.scrollHeight - this.chatRef.current.clientHeight;
 		this.chatRef.current.scrollTo(0, scroll);
@@ -189,14 +220,14 @@ class Chat extends Component {
 						style={{
 							height: settings.chatHeight ? `${settings.chatHeight}vh` : '50vh',
 							zoom: settings.chatScale ? settings.chatScale : '1',
-							'-moz-transform': settings.chatScale
+							MozTransform: settings.chatScale
 								? `scale(${settings.chatScale})`
 								: 'scale(1)',
 						}}
 						ref={this.chatRef}
 					>
 						<motion.div
-							className={!settings.compactMode && 'chat-inner'}
+							className={settings.compactMode ? undefined : 'chat-inner'}
 							style={
 								this.state.isOnRightSide
 									? { alignItems: 'flex-end' }
@@ -213,9 +244,15 @@ class Chat extends Component {
 							}
 							ref={this.innerChatRef}
 						>
-							{this.state.messages.map((msg, i) => (
-								<motion.div key={i} variants={item}>
-									{msg}
+							{this.state.messages.map((msg) => (
+								<motion.div key={msg.id} variants={item}>
+									<ChatMessage
+										username={msg.username}
+										message={msg.message}
+										badges={msg.badges}
+										color={msg.color}
+										settings={settings}
+									/>
 								</motion.div>
 							))}
 						</motion.div>
@@ -228,7 +265,7 @@ class Chat extends Component {
 							transform: this.state.style.transform,
 						}}
 						onClick={() => {
-							this.client.disconnect();
+							this.disconnect();
 							this.setState({ disableOverlay: true });
 						}}
 					></div>
