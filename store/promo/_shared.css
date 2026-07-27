@@ -1,0 +1,130 @@
+/* Shared look for the Chrome Web Store promo tiles.
+ *
+ * Same palette as the popup (src/popup/popup.css): near black surface, Twitch
+ * purple accent. Chat bubbles use rgba(0,0,0,0.5), which is the overlay's real
+ * default bgColor, so the tiles show what the extension actually looks like.
+ *
+ * Fonts are system-ui only. A promo tile that waits on a webfont renders as
+ * Times New Roman in a headless screenshot, which is how you ship a broken tile. */
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html,
+body {
+	overflow: hidden;
+	background: #08080c;
+	font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+	color: #efeff1;
+	-webkit-font-smoothing: antialiased;
+}
+
+/* The tile has to fill its whole area -- no letterboxing, no rounded corners
+   with the page showing through. Store guidelines are explicit about it. */
+.stage {
+	position: relative;
+	overflow: hidden;
+	background:
+		radial-gradient(90% 120% at 88% -10%, rgba(169, 112, 255, 0.3), transparent 60%),
+		radial-gradient(70% 90% at 4% 100%, rgba(119, 44, 232, 0.22), transparent 62%),
+		linear-gradient(160deg, #16121f 0%, #0b0a11 55%, #08080c 100%);
+}
+
+/* Faint diagonal sheen so the flat panel reads as glass rather than paint. */
+.stage::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(112deg, rgba(255, 255, 255, 0.042), transparent 58%);
+	pointer-events: none;
+}
+
+.title {
+	font-weight: 800;
+	letter-spacing: -0.035em;
+	line-height: 0.98;
+}
+
+.tagline {
+	color: #a5a3b3;
+	font-weight: 450;
+}
+
+.accent {
+	color: #c7a4ff;
+}
+
+/* --- the mocked player the chat floats over --- */
+
+.player {
+	position: relative;
+	overflow: hidden;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	background:
+		radial-gradient(120% 140% at 20% 15%, #3a2d5c 0%, #1d1830 45%, #121020 100%);
+	box-shadow:
+		0 40px 80px -30px rgba(0, 0, 0, 0.85),
+		inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.player .play {
+	position: absolute;
+	fill: #fff;
+	opacity: 0.16;
+}
+
+.player .scrub {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(255, 255, 255, 0.16);
+}
+
+.player .scrub > i {
+	display: block;
+	height: 100%;
+	background: linear-gradient(90deg, #a970ff, #772ce8);
+}
+
+.live {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #fff;
+	background: #eb0400;
+	border-radius: 999px;
+}
+
+/* --- chat bubbles, right aligned exactly like the overlay --- */
+
+.chat {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+}
+
+.line {
+	width: fit-content;
+	background: rgba(0, 0, 0, 0.5);
+	color: #fff;
+	backdrop-filter: blur(2px);
+}
+
+.line b {
+	font-weight: 700;
+}
+
+.badge {
+	display: inline-block;
+	vertical-align: -0.12em;
+	border-radius: 3px;
+	background: linear-gradient(#a970ff, #772ce8);
+}

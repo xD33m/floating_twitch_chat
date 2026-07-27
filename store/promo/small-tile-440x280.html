@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Small promo tile 440x280</title>
+		<link rel="stylesheet" href="_shared.css" />
+		<style>
+			html,
+			body,
+			.stage {
+				width: 440px;
+				height: 280px;
+			}
+
+			/* No player frame at this size -- a 440px wide tile cannot hold a bordered
+			   panel and readable text at once, so the whole tile is the player: the
+			   play glyph sits behind the copy and the chat floats over the right. */
+			.play-ghost {
+				position: absolute;
+				top: 96px;
+				left: -14px;
+				width: 128px;
+				height: 148px;
+				fill: #fff;
+				opacity: 0.085;
+			}
+
+			.copy {
+				position: absolute;
+				top: 34px;
+				left: 26px;
+				width: 232px;
+			}
+
+			.mark {
+				width: 40px;
+				height: 40px;
+				margin-bottom: 16px;
+			}
+
+			.title {
+				font-size: 30px;
+			}
+
+			.tagline {
+				margin-top: 12px;
+				font-size: 13.5px;
+				line-height: 1.45;
+			}
+
+			.emotes {
+				margin-top: 16px;
+				font-size: 12px;
+				font-weight: 700;
+				letter-spacing: 0.09em;
+				text-transform: uppercase;
+				color: #c7a4ff;
+			}
+
+			.chat {
+				top: 26px;
+				right: 16px;
+				gap: 7px;
+				width: 172px;
+			}
+
+			.line {
+				max-width: 100%;
+				padding: 6px 8px;
+				border-radius: 5px;
+				font-size: 12.5px;
+				line-height: 1.28;
+			}
+
+			.badge {
+				width: 11px;
+				height: 11px;
+				margin-right: 4px;
+			}
+
+			.scrub {
+				position: absolute;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				height: 4px;
+				background: rgba(255, 255, 255, 0.14);
+			}
+
+			.scrub > i {
+				display: block;
+				height: 100%;
+				background: linear-gradient(90deg, #a970ff, #772ce8);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="stage">
+			<svg class="play-ghost" viewBox="0 0 128 148">
+				<path d="M8 4 L122 74 L8 144 Z" />
+			</svg>
+
+			<div class="copy">
+				<svg class="mark" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+					<defs>
+						<linearGradient id="frame" x1="0" y1="0" x2="0" y2="1">
+							<stop offset="0" stop-color="#A970FF" />
+							<stop offset="1" stop-color="#772CE8" />
+						</linearGradient>
+					</defs>
+					<rect x="8" y="8" width="112" height="112" rx="26" fill="url(#frame)" />
+					<path d="M28 45 L55 64 L28 83 Z" fill="#fff" opacity="0.62" />
+					<g fill="#fff">
+						<rect x="64" y="38" width="42" height="16" rx="8" />
+						<rect x="72" y="60" width="34" height="16" rx="8" />
+						<rect x="56" y="82" width="50" height="16" rx="8" />
+					</g>
+				</svg>
+				<h1 class="title">Floating<br />Twitch Chat</h1>
+				<p class="tagline">Read chat without leaving fullscreen.</p>
+				<p class="emotes">FFZ · BTTV · 7TV</p>
+			</div>
+
+			<!-- Kept to messages that fit one line each: five wrapping bubbles turn
+			     this corner into a grey block at tile size. -->
+			<div class="chat">
+				<div class="line"><b style="color: #1e90ff">Garu1f</b>: no way</div>
+				<div class="line">
+					<b style="color: #ff69b4">stardust_dragon</b>: finally
+				</div>
+				<div class="line">
+					<b style="color: #9acd32"><i class="badge"></i>DeceitfulPear</b>: clip it
+				</div>
+				<div class="line"><b style="color: #ff7f50">Cyberwire69</b>: LULW 😂</div>
+				<div class="line">
+					<b style="color: #8a2be2"><i class="badge"></i>tooclose</b>: W overlay
+				</div>
+			</div>
+
+			<div class="scrub"><i style="width: 46%"></i></div>
+		</div>
+	</body>
+</html>
