@@ -6,9 +6,10 @@
 	"version": "2.0",
 	"minimum_chrome_version": "88",
 	"icons": {
-		"32": "assets/chat32.png",
-		"64": "assets/chat64.png",
-		"128": "assets/chat128.png"
+		"16": "assets/icon16.png",
+		"32": "assets/icon32.png",
+		"48": "assets/icon48.png",
+		"128": "assets/icon128.png"
 	},
 	"permissions": ["storage"],
 	"background": {
@@ -16,7 +17,12 @@
 	},
 	"action": {
 		"default_popup": "popup.html",
-		"default_title": "Floating Twitch Chat"
+		"default_title": "Floating Twitch Chat",
+		"default_icon": {
+			"16": "assets/icon16.png",
+			"32": "assets/icon32.png",
+			"48": "assets/icon48.png"
+		}
 	},
 	"content_scripts": [
 		{

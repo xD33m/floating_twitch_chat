@@ -40,6 +40,7 @@ API disappearing, which is what broke emotes and badges before.
 | `public/manifest.json`     | Manifest V3                                                                  |
 | `public/app/background.js` | Service worker; only reports the window's fullscreen state                   |
 | `public/popup.html`        | Popup markup; loads the bundled `static/js/popup.js` and `static/css/popup.css` |
+| `public/assets/`           | Extension icons. `icon.svg` is the source the PNGs are rendered from; it is not shipped |
 
 Everything under `public/` is copied into `build/` verbatim; `src/` is bundled
 into `build/static/`. Nothing in the build reads out of `node_modules` by path,

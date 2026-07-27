@@ -48,8 +48,13 @@ export default (_env, argv) => {
 		},
 		plugins: [
 			new MiniCssExtractPlugin({ filename: 'static/css/[name].css' }),
-			// Everything in public/ is already in its final shape.
-			new CopyPlugin({ patterns: [{ from: 'public', to: '.' }] }),
+			// Everything in public/ is already in its final shape. icon.svg is the
+			// source the PNGs are rendered from, so it does not need to ship.
+			new CopyPlugin({
+				patterns: [
+					{ from: 'public', to: '.', globOptions: { ignore: ['**/icon.svg'] } },
+				],
+			}),
 		],
 		performance: false,
 		optimization: {
