@@ -16,6 +16,10 @@ pnpm build
 The loadable extension is written to `build/`. Load it via
 `chrome://extensions` → _Developer mode_ → _Load unpacked_ → pick `build/`.
 
+`pnpm build` also writes `dist/floating-twitch-chat-<manifest version>.zip` —
+that is the file to upload to the Chrome Web Store. `pnpm zip` repacks the
+existing `build/` without rebuilding.
+
 `pnpm watch` rebuilds on change (reload the extension in `chrome://extensions`
 afterwards).
 
