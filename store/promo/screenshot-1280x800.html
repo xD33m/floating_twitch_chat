@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Listing screenshot 1280x800 / 640x400</title>
+		<link rel="stylesheet" href="_shared.css" />
+		<script>
+			// 640x400 is exactly half of 1280x800, so both listing sizes come off this
+			// one layout: render.mjs asks for ?scale=0.5 and a 640x400 window. Zooming
+			// beats downscaling a PNG -- the text is laid out and rasterised at the
+			// smaller size instead of being resampled.
+			const scale = new URLSearchParams(location.search).get('scale') || '1';
+			document.documentElement.style.setProperty('--scale', scale);
+		</script>
+		<style>
+			.stage {
+				zoom: var(--scale, 1);
+				width: 1280px;
+				height: 800px;
+			}
+
+			/* No decorative sheen here, unlike the promo tiles: a 4% white wash over
+			   the whole frame would shift the captured popup's real colours. */
+			.stage::after {
+				content: none;
+			}
+
+			/* The frame stands in for a fullscreen player. Deliberately abstract: a
+			   mocked-up stream would be pretending to be a capture of something. What
+			   is real here is the overlay and the popup. */
+			.stage {
+				background:
+					radial-gradient(60% 70% at 30% 38%, rgba(169, 112, 255, 0.16), transparent 70%),
+					radial-gradient(90% 120% at 90% 0%, rgba(119, 44, 232, 0.2), transparent 62%),
+					linear-gradient(155deg, #241d38 0%, #14111f 48%, #0c0b11 100%);
+			}
+
+			/* Sits in the gap the layout leaves bottom centre: the overlay only fills
+			   the top half of the right edge, because that is what the default
+			   chatHeight of 50% actually does. */
+			.play-ghost {
+				position: absolute;
+				top: 424px;
+				left: 604px;
+				width: 176px;
+				height: 205px;
+				fill: #fff;
+				opacity: 0.07;
+			}
+
+			.caption {
+				position: absolute;
+				top: 48px;
+				left: 66px;
+				width: 620px;
+			}
+
+			.mark {
+				display: flex;
+				align-items: center;
+				gap: 13px;
+				margin-bottom: 22px;
+			}
+
+			.mark svg {
+				width: 44px;
+				height: 44px;
+			}
+
+			.mark span {
+				font-size: 17px;
+				font-weight: 600;
+				letter-spacing: 0.15em;
+				text-transform: uppercase;
+				color: #8d8a9d;
+			}
+
+			.caption h1 {
+				font-size: 42px;
+				font-weight: 800;
+				letter-spacing: -0.03em;
+				line-height: 1.04;
+			}
+
+			.caption p {
+				margin-top: 18px;
+				font-size: 19px;
+				line-height: 1.5;
+				color: #a5a3b3;
+			}
+
+			/* The real popup, captured by capture-popup.mjs. 285px against its true
+			   300px so the whole panel clears the control bar -- a screenshot that
+			   crops the reset button off looks like a bug. */
+			.settings {
+				position: absolute;
+				top: 286px;
+				left: 66px;
+			}
+
+			.settings img {
+				display: block;
+				width: 285px;
+				border-radius: 10px;
+				/* The border is the popup's own --border. Without it the panel's bottom
+				   edge disappears into its shadow and it stops reading as a panel. */
+				border: 1px solid rgba(255, 255, 255, 0.09);
+				box-shadow: 0 22px 44px -24px rgba(0, 0, 0, 0.75);
+			}
+
+			/* Right where the overlay puts it, at the width the overlay uses
+			   (public/css/root.css: .chat { width: 400px }). */
+			.chat {
+				top: 40px;
+				right: 26px;
+				width: 400px;
+				gap: 8px;
+			}
+
+			.line {
+				max-width: 100%;
+				padding: 8px 10px;
+				border-radius: 5px;
+				font-size: 16px;
+				line-height: 1.32;
+			}
+
+			.line img {
+				height: 26px;
+			}
+
+			.badge {
+				width: 14px;
+				height: 14px;
+				margin-right: 5px;
+			}
+
+			/* Player controls, so the frame reads as a video player rather than a
+			   gradient with text on it. */
+			.controls {
+				position: absolute;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				height: 52px;
+				padding: 0 26px;
+				display: flex;
+				align-items: center;
+				gap: 20px;
+				background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
+			}
+
+			.controls .bar {
+				position: absolute;
+				left: 0;
+				right: 0;
+				top: 0;
+				height: 4px;
+				background: rgba(255, 255, 255, 0.18);
+			}
+
+			.controls .bar > i {
+				display: block;
+				width: 46%;
+				height: 100%;
+				background: linear-gradient(90deg, #a970ff, #772ce8);
+			}
+
+			.controls svg {
+				flex: none;
+				fill: rgba(255, 255, 255, 0.82);
+			}
+
+			.controls .live {
+				position: static;
+				gap: 7px;
+				padding: 5px 11px;
+				font-size: 13px;
+			}
+
+			.controls .live::before {
+				content: '';
+				width: 7px;
+				height: 7px;
+				border-radius: 50%;
+				background: #fff;
+			}
+
+			.controls .spacer {
+				margin-left: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="stage">
+			<svg class="play-ghost" viewBox="0 0 168 196">
+				<path d="M10 6 L160 98 L10 190 Z" />
+			</svg>
+
+			<div class="caption">
+				<div class="mark">
+					<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+						<defs>
+							<linearGradient id="frame" x1="0" y1="0" x2="0" y2="1">
+								<stop offset="0" stop-color="#A970FF" />
+								<stop offset="1" stop-color="#772CE8" />
+							</linearGradient>
+						</defs>
+						<rect x="8" y="8" width="112" height="112" rx="26" fill="url(#frame)" />
+						<path d="M28 45 L55 64 L28 83 Z" fill="#fff" opacity="0.62" />
+						<g fill="#fff">
+							<rect x="64" y="38" width="42" height="16" rx="8" />
+							<rect x="72" y="60" width="34" height="16" rx="8" />
+							<rect x="56" y="82" width="50" height="16" rx="8" />
+						</g>
+					</svg>
+					<span>Floating Twitch Chat</span>
+				</div>
+				<h1>Chat keeps running<br />while you stay fullscreen</h1>
+				<p>
+					Drag it anywhere on the player. Height, scale and background colour live
+					in the popup.
+				</p>
+			</div>
+
+			<div class="settings">
+				<img src="generated/popup.png" alt="The extension popup" />
+			</div>
+
+			<div class="chat">
+				<div class="line">
+					<b style="color: #1e90ff">Garu1f</b>: no way he actually hit that
+				</div>
+				<div class="line">
+					<b style="color: #ff69b4">stardust_dragon</b>: chat in fullscreen
+					<img src="emotes/Clap.webp" alt="Clap" />
+				</div>
+				<div class="line">
+					<b style="color: #9acd32"><i class="badge"></i>DeceitfulPear</b>: clip it
+					<img src="emotes/nymnCorn.webp" alt="nymnCorn" />
+				</div>
+				<div class="line">
+					<b style="color: #ff7f50">Cyberwire69</b>:
+					<img src="emotes/glorp.webp" alt="glorp" />
+					<img src="emotes/glorp.webp" alt="glorp" />
+				</div>
+				<div class="line">
+					<b style="color: #5f9ea0">Allmostdone</b>: been waiting for this one
+				</div>
+				<div class="line">
+					<b style="color: #8a2be2"><i class="badge"></i>tooclosebutfar</b>: W overlay
+					<img src="emotes/Clap.webp" alt="Clap" />
+				</div>
+				<div class="line">
+					<b style="color: #daa520">Goofycatcher</b>: gg
+					<img src="emotes/glorp.webp" alt="glorp" />
+				</div>
+				<div class="line"><b style="color: #2e8b57">reckH_</b>: chat without alt+tab</div>
+			</div>
+
+			<div class="controls">
+				<div class="bar"><i></i></div>
+				<svg width="16" height="18" viewBox="0 0 16 18">
+					<path d="M1 1 L15 9 L1 17 Z" />
+				</svg>
+				<svg width="20" height="18" viewBox="0 0 20 18">
+					<path d="M1 6 h4 L10 1 v16 L5 12 H1 Z" />
+					<path
+						d="M13 5 a6 6 0 0 1 0 8"
+						fill="none"
+						stroke="rgba(255,255,255,0.82)"
+						stroke-width="1.8"
+					/>
+				</svg>
+				<span class="live">live</span>
+				<span class="spacer"></span>
+				<svg width="18" height="18" viewBox="0 0 18 18">
+					<path d="M0 0h7v2H2v5H0V0zm11 0h7v7h-2V2h-5V0zM0 11h2v5h5v2H0v-7zm16 0h2v7h-7v-2h5v-5z" />
+				</svg>
+			</div>
+		</div>
+	</body>
+</html>

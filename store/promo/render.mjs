@@ -1,61 +1,54 @@
-// Renders the promo tiles next to this file to PNGs at their exact required
-// pixel size, using the Chrome that is already installed. The store rejects a
-// tile that is even one pixel off, so the window size is not negotiable and the
+// Renders the listing artwork next to this file to PNGs at their exact required
+// pixel size, using the Chrome that is already installed. The store rejects an
+// image that is even one pixel off, so the window size is not negotiable and the
 // device scale factor is pinned to 1.
 //
 //   node store/promo/render.mjs
 //
-// Set CHROME to override the executable path.
+// Needs no network: the 7TV emotes and the popup capture are committed. Set
+// CHROME to override the executable path.
 
 import { execFile } from 'node:child_process';
-import { access } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
+import { findChrome } from './chrome.mjs';
 
 const run = promisify(execFile);
 const here = import.meta.dirname;
 
-const TILES = [
+const IMAGES = [
 	{ file: 'marquee-1400x560.html', out: 'marquee-1400x560.png', w: 1400, h: 560 },
 	{ file: 'small-tile-440x280.html', out: 'small-tile-440x280.png', w: 440, h: 280 },
+	{
+		file: 'screenshot-1280x800.html',
+		out: 'screenshot-1280x800.png',
+		w: 1280,
+		h: 800,
+	},
+	// Same layout as above, zoomed to half. The store wants every screenshot in a
+	// listing at one size, so both sizes of the same image are the point.
+	{
+		file: 'screenshot-1280x800.html',
+		query: '?scale=0.5',
+		out: 'screenshot-640x400.png',
+		w: 640,
+		h: 400,
+	},
 ];
 
-const CANDIDATES = [
-	process.env.CHROME,
-	'C:/Program Files/Google/Chrome/Application/chrome.exe',
-	'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
-	`${process.env.LOCALAPPDATA}/Google/Chrome/Application/chrome.exe`,
-	'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-	'/usr/bin/google-chrome',
-	'/usr/bin/chromium',
-].filter(Boolean);
+const chrome = await findChrome();
 
-let chrome;
-for (const candidate of CANDIDATES) {
-	try {
-		await access(candidate);
-		chrome = candidate;
-		break;
-	} catch {
-		// keep looking
-	}
-}
-
-if (!chrome) {
-	console.error('No Chrome found. Set CHROME to the executable path.');
-	process.exit(1);
-}
-
-for (const tile of TILES) {
-	const out = path.join(here, tile.out);
+for (const image of IMAGES) {
+	const out = path.join(here, image.out);
+	const url = `file:///${path.join(here, image.file).replaceAll('\\', '/')}${image.query ?? ''}`;
 	await run(chrome, [
 		'--headless=new',
 		'--disable-gpu',
 		'--hide-scrollbars',
 		'--force-device-scale-factor=1',
-		`--window-size=${tile.w},${tile.h}`,
+		`--window-size=${image.w},${image.h}`,
 		`--screenshot=${out}`,
-		`file:///${path.join(here, tile.file).replaceAll('\\', '/')}`,
+		url,
 	]);
-	console.log(`${tile.out}  ${tile.w}x${tile.h}`);
+	console.log(`${image.out}  ${image.w}x${image.h}`);
 }
