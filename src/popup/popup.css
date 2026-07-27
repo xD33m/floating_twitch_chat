@@ -1,97 +1,294 @@
-/* CSS für's popup in public/popup.html.
- * The Caveat webfont is a <link> in popup.html: this file is concatenated after
- * the vendored stylesheets, and an @import is only valid at the very top.
+/* CSS for the popup in public/popup.html.
  *
- * The !important rules are here to win against water.css, which styles bare
- * form elements. Rows lay themselves out -- the controls used to be pinned with
- * hardcoded `top` offsets, so adding or removing a line detached every slider
- * from its label. */
+ * Self contained on purpose. The popup used to load water.css and then fight it
+ * with !important on nearly every rule, so a bare form element looked one way
+ * and the same element inside a row looked another. Every control here is styled
+ * from scratch instead.
+ *
+ * Pickr's nano theme is still vendored (it draws the colour picker popout); the
+ * handful of overrides for it sit at the bottom of this file. That stylesheet is
+ * concatenated before this one, which is also why an @import would not be valid
+ * here -- the webfont this popup used to pull from Google Fonts is gone, the
+ * system UI font needs no network. */
+
+:root {
+	color-scheme: dark;
+
+	--bg: #101014;
+	--surface: rgba(255, 255, 255, 0.04);
+	--surface-hover: rgba(255, 255, 255, 0.07);
+	--border: rgba(255, 255, 255, 0.09);
+	--divider: rgba(255, 255, 255, 0.06);
+	--track: rgba(255, 255, 255, 0.13);
+	--text: #efeff1;
+	--text-muted: #a3a3ad;
+	--accent: #a970ff;
+	--accent-strong: #772ce8;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
 
 body {
-	/* water.css puts padding on the body, which pushed the frame wider than the
-	 * popup and clipped the values on the right. */
-	margin: 0px !important;
-	padding: 0px !important;
-	font-size: 12px;
+	margin: 0;
+	width: 300px;
+	background: var(--bg);
+	color: var(--text);
+	font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	font-size: 13px;
+	line-height: 1.4;
+	-webkit-font-smoothing: antialiased;
 }
 
+/* Purple bloom behind the header, so the top of the popup is not a flat slab. */
 #frame {
-	box-sizing: border-box;
-	width: 270px;
-	padding: 12px;
+	position: relative;
+	padding: 16px;
+	background: radial-gradient(
+		120% 90px at 50% 0,
+		rgba(169, 112, 255, 0.16),
+		transparent
+	);
 }
 
-#name {
-	text-align: center;
-	margin: 0 0 4px;
-	font-family: 'Caveat', cursive;
-	font-size: 21px;
+.header {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	margin-bottom: 10px;
 }
 
-#hint {
-	margin: 0 0 16px;
-	text-align: center;
-	font-size: 11px;
+.logo {
+	flex: none;
+	width: 26px;
+	height: 26px;
+}
+
+.title {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+.hint {
+	margin: 0 0 14px;
+	padding: 9px 11px;
+	border: 1px solid var(--border);
+	border-left: 2px solid var(--accent);
+	border-radius: 4px 10px 10px 4px;
+	background: var(--surface);
+	color: var(--text-muted);
+	font-size: 11.5px;
 	line-height: 1.45;
-	opacity: 0.7;
 }
 
-#hint kbd {
-	font-size: 10px;
-	padding: 1px 4px;
+.hint kbd {
+	padding: 1px 5px;
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	background: rgba(255, 255, 255, 0.08);
+	color: var(--text);
+	font-family: inherit;
+	font-size: 10.5px;
+	font-weight: 600;
+}
+
+/* Settings are grouped into cards: the toggles and the colour swatch in one, the
+ * two sliders in another. Rows size themselves off their content -- the controls
+ * used to be pinned with hardcoded `top` offsets, so adding or removing a line
+ * detached every slider from its label. */
+.card {
+	margin-bottom: 10px;
+	padding: 0 12px;
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	background: var(--surface);
 }
 
 .row {
 	display: flex;
 	align-items: center;
-	gap: 8px;
-	margin-bottom: 16px;
+	gap: 10px;
+	min-height: 42px;
+	padding: 7px 0;
 }
 
-.row label {
-	margin: 0 !important;
-	flex: none;
+.row + .row {
+	border-top: 1px solid var(--divider);
 }
 
-.row input[type='checkbox'] {
-	margin: 0 !important;
-	flex: none;
+.row-label {
+	flex: 1;
+	min-width: 0;
+	color: var(--text);
 }
 
-input:focus {
-	box-shadow: none !important;
+/* Label and value on the first line, the slider across the full width below it:
+ * a 120px slider squeezed next to its label was the fiddliest part of the old
+ * popup to aim at. */
+.row-slider {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	align-items: center;
+	gap: 9px 10px;
+	padding: 11px 0 13px;
 }
 
-input[type='range'] {
-	display: block !important;
-	margin: 0 0 0 auto !important;
-	width: 120px !important;
-}
-
-input[type='range']:active {
-	transform: none !important;
+.row-slider input[type='range'] {
+	grid-column: 1 / -1;
 }
 
 .value {
+	padding: 2px 7px;
+	border-radius: 6px;
+	background: rgba(255, 255, 255, 0.07);
+	color: var(--text-muted);
+	font-size: 11px;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+}
+
+/* Toggles. A checkbox with appearance:none keeps the label association, the
+ * keyboard behaviour and the change event that the popup already listens for. */
+.switch {
+	position: relative;
 	flex: none;
-	width: 34px;
-	text-align: right;
+	width: 36px;
+	height: 20px;
+	margin: 0;
+	appearance: none;
+	border-radius: 999px;
+	background: var(--track);
+	cursor: pointer;
+	transition: background 0.18s ease;
 }
 
-button {
-	padding-right: 15px !important;
-	padding-left: 15px !important;
+.switch::after {
+	content: '';
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+	transition: transform 0.18s ease;
 }
 
-/* Pickr replaces #pickr with its own .pickr wrapper, so this has to sit on the
+.switch:hover {
+	background: rgba(255, 255, 255, 0.2);
+}
+
+.switch:checked,
+.switch:checked:hover {
+	background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+}
+
+.switch:checked::after {
+	transform: translateX(16px);
+}
+
+/* Sliders. --fill is the played portion of the track and is kept in step with
+ * the value by src/popup/index.js. */
+input[type='range'] {
+	width: 100%;
+	height: 14px;
+	margin: 0;
+	appearance: none;
+	background: none;
+	cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+	height: 6px;
+	border-radius: 999px;
+	background: linear-gradient(
+		to right,
+		var(--accent) var(--fill, 50%),
+		var(--track) var(--fill, 50%)
+	);
+}
+
+input[type='range']::-webkit-slider-thumb {
+	width: 14px;
+	height: 14px;
+	margin-top: -4px;
+	appearance: none;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+	transition: transform 0.12s ease;
+}
+
+input[type='range']:hover::-webkit-slider-thumb {
+	transform: scale(1.15);
+}
+
+input[type='range']:active::-webkit-slider-thumb {
+	transform: scale(1.15);
+	box-shadow: 0 0 0 5px rgba(169, 112, 255, 0.25);
+}
+
+#reset {
+	width: 100%;
+	padding: 9px;
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	background: var(--surface);
+	color: var(--text-muted);
+	font: inherit;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+#reset:hover {
+	border-color: rgba(255, 255, 255, 0.18);
+	background: var(--surface-hover);
+	color: var(--text);
+}
+
+#reset:active {
+	background: rgba(255, 255, 255, 0.03);
+}
+
+:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
+/* Pickr replaces #pickr with its own .pickr wrapper, so these have to sit on the
  * wrapper rather than on the placeholder. */
 .pickr {
-	display: block !important;
-	margin-left: auto;
+	flex: none;
 	line-height: 0;
 }
 
 .pickr .pcr-button {
-	width: 35px !important;
-	height: 15px !important;
+	width: 46px !important;
+	height: 22px !important;
+	border-radius: 6px;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+	transition: box-shadow 0.15s ease;
+}
+
+.pickr .pcr-button:hover {
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+.pcr-app {
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	background: #1c1c22;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.pcr-app .pcr-interaction .pcr-save {
+	border-radius: 6px;
+	font-weight: 500;
 }
