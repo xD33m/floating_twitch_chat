@@ -4,42 +4,73 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Floating Twitch Chat</title>
-		<link
-			rel="stylesheet"
-			href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap"
-		/>
 		<link href="static/css/popup.css" rel="stylesheet" />
 	</head>
 	<body>
 		<div id="frame">
-			<p id="name">floating twitch chat</p>
-			<p id="hint">
+			<header class="header">
+				<!-- Same shapes as assets/icon.svg, inlined so the popup paints in one
+				     pass and stays crisp at any zoom level. -->
+				<svg class="logo" viewBox="0 0 128 128" aria-hidden="true">
+					<defs>
+						<linearGradient id="logoFrame" x1="0" y1="0" x2="0" y2="1">
+							<stop offset="0" stop-color="#A970FF" />
+							<stop offset="1" stop-color="#772CE8" />
+						</linearGradient>
+					</defs>
+					<rect
+						x="8"
+						y="8"
+						width="112"
+						height="112"
+						rx="26"
+						fill="url(#logoFrame)"
+					/>
+					<path d="M28 45 L55 64 L28 83 Z" fill="#fff" opacity="0.62" />
+					<g fill="#fff">
+						<rect x="64" y="38" width="42" height="16" rx="8" />
+						<rect x="72" y="60" width="34" height="16" rx="8" />
+						<rect x="56" y="82" width="50" height="16" rx="8" />
+					</g>
+				</svg>
+				<h1 class="title">Floating Twitch Chat</h1>
+			</header>
+
+			<p class="hint">
 				The overlay only shows while the video player is fullscreen. Press
 				<kbd>F</kbd> on Twitch.
 			</p>
-			<div class="row">
-				<input type="checkbox" id="compactMode" />
-				<label for="compactMode">Compact Mode</label>
+
+			<div class="card">
+				<div class="row">
+					<label class="row-label" for="compactMode">Compact mode</label>
+					<input class="switch" type="checkbox" id="compactMode" />
+				</div>
+				<div class="row">
+					<label class="row-label" for="disableOverlay">Disable overlay</label>
+					<input class="switch" type="checkbox" id="disableOverlay" />
+				</div>
+				<div class="row">
+					<!-- Not a <label for>: Pickr swaps #pickr out for its own button. -->
+					<span class="row-label">Background color</span>
+					<div class="color-picker" id="pickr"></div>
+				</div>
 			</div>
-			<div class="row">
-				<input type="checkbox" id="disableOverlay" />
-				<label for="disableOverlay">Disable Overlay</label>
+
+			<div class="card">
+				<div class="row row-slider">
+					<label class="row-label" for="chatHeight">Chat height</label>
+					<span class="value"><span id="heightValue"></span>%</span>
+					<input type="range" min="0" max="100" value="50" id="chatHeight" />
+				</div>
+				<div class="row row-slider">
+					<label class="row-label" for="chatScale">Chat scale</label>
+					<span class="value"><span id="scaleValue"></span>%</span>
+					<input type="range" min="1" max="20" value="10" id="chatScale" />
+				</div>
 			</div>
-			<div class="row">
-				<label for="pickr">Background Color:</label>
-				<div class="color-picker" id="pickr"></div>
-			</div>
-			<div class="row">
-				<label for="chatHeight">Chat height:</label>
-				<input type="range" min="0" max="100" value="50" id="chatHeight" />
-				<span class="value"><span id="heightValue"></span>%</span>
-			</div>
-			<div class="row">
-				<label for="chatScale">Chat Scale:</label>
-				<input type="range" min="1" max="20" value="10" id="chatScale" />
-				<span class="value"><span id="scaleValue"></span>%</span>
-			</div>
-			<button id="reset">Reset to default</button>
+
+			<button id="reset" type="button">Reset to default</button>
 		</div>
 		<script src="static/js/popup.js"></script>
 	</body>

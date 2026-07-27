@@ -1,10 +1,9 @@
 /* global chrome */
 
 // Bundled rather than loaded from a CDN: MV3 forbids remote code, and a popup
-// that needs the network to look right is no fun. They are imported (not copied
-// out of node_modules) so the build does not care how the package manager lays
-// its store out.
-import 'water.css/out/dark.css';
+// that needs the network to look right is no fun. It is imported (not copied out
+// of node_modules) so the build does not care how the package manager lays its
+// store out.
 import '@simonwep/pickr/dist/themes/nano.min.css';
 import './popup.css';
 import Pickr from '@simonwep/pickr';
@@ -58,6 +57,14 @@ function save(values) {
 	}
 }
 
+// The filled part of a slider track is painted from --fill, so it has to follow
+// the value on every change.
+function paintTrack(slider) {
+	const min = Number(slider.min);
+	const ratio = (Number(slider.value) - min) / (Number(slider.max) - min);
+	slider.style.setProperty('--fill', `${ratio * 100}%`);
+}
+
 function pick(storage, key) {
 	return storage[key] === undefined ? DEFAULTS[key] : storage[key];
 }
@@ -71,10 +78,12 @@ async function init() {
 	const chatHeight = pick(storage, 'chatHeight');
 	$('chatHeight').value = chatHeight;
 	$('heightValue').textContent = chatHeight;
+	paintTrack($('chatHeight'));
 
 	const chatScale = pick(storage, 'chatScale');
 	$('chatScale').value = chatScale * 10;
 	$('scaleValue').textContent = Math.round(chatScale * 100);
+	paintTrack($('chatScale'));
 
 	const pickr = Pickr.create({
 		el: '.color-picker',
@@ -112,11 +121,13 @@ $('disableOverlay').addEventListener('change', (event) => {
 
 $('chatHeight').addEventListener('input', (event) => {
 	$('heightValue').textContent = event.target.value;
+	paintTrack(event.target);
 	save({ chatHeight: Number(event.target.value) });
 });
 
 $('chatScale').addEventListener('input', (event) => {
 	$('scaleValue').textContent = Math.round(event.target.value * 10);
+	paintTrack(event.target);
 	save({ chatScale: Number(event.target.value) / 10 });
 });
 

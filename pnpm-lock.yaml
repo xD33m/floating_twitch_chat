@@ -23,9 +23,6 @@ importers:
       tmi.js:
         specifier: ^1.8.5
         version: 1.8.5
-      water.css:
-        specifier: ^2.1.1
-        version: 2.1.1
     devDependencies:
       '@babel/core':
         specifier: ^7.24.0
@@ -1436,9 +1433,6 @@ packages:
   watchpack@2.5.2:
     resolution: {integrity: sha512-6i/00NBjP4yGPs+caKSyRfpTF/8Torsu0MOW3mMzIbhgISFder8i7xbqgHlLMwJrdiN8ndBV3UA1/AfzPSr+jg==}
     engines: {node: '>=10.13.0'}
-
-  water.css@2.1.1:
-    resolution: {integrity: sha512-gkO5byC+pZ7ndEV18hs/RmxKoDtEZXx06tZU4ocI3IBdv4xV64tlhjIFbDjurysRnNkiy2oQTr8PakRyzZWPJw==}
 
   webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
@@ -2983,8 +2977,6 @@ snapshots:
   watchpack@2.5.2:
     dependencies:
       graceful-fs: 4.2.11
-
-  water.css@2.1.1: {}
 
   webidl-conversions@3.0.1: {}
 

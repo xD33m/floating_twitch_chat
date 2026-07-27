@@ -44,9 +44,8 @@ API disappearing, which is what broke emotes and badges before.
 
 Everything under `public/` is copied into `build/` verbatim; `src/` is bundled
 into `build/static/`. Nothing in the build reads out of `node_modules` by path,
-so it works the same under pnpm, npm or Yarn PnP — the popup's third party
-stylesheets (water.css, Pickr's nano theme) are `import`ed and bundled, not
-copied.
+so it works the same under pnpm, npm or Yarn PnP — the popup's one third party
+stylesheet (Pickr's nano theme) is `import`ed and bundled, not copied.
 
 ## Notes on the third party APIs
 

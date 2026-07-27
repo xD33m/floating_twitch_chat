@@ -17,8 +17,7 @@
 		"framer-motion": "^3.10.6",
 		"react": "^16.14.0",
 		"react-dom": "^16.14.0",
-		"tmi.js": "^1.8.5",
-		"water.css": "^2.1.1"
+		"tmi.js": "^1.8.5"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.24.0",
