@@ -122,6 +122,12 @@ body {
 	font-weight: 700;
 }
 
+/* Real 7TV emotes out of emotes/. text-bottom is what the overlay itself uses
+   (public/css/root.css), so they sit on the line the same way here. */
+.line img {
+	vertical-align: text-bottom;
+}
+
 .badge {
 	display: inline-block;
 	vertical-align: -0.12em;

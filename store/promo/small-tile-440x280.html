@@ -61,7 +61,7 @@
 				top: 26px;
 				right: 16px;
 				gap: 7px;
-				width: 172px;
+				width: 180px;
 			}
 
 			.line {
@@ -76,6 +76,10 @@
 				width: 11px;
 				height: 11px;
 				margin-right: 4px;
+			}
+
+			.line img {
+				height: 22px;
 			}
 
 			.scrub {
@@ -123,17 +127,29 @@
 
 			<!-- Kept to messages that fit one line each: five wrapping bubbles turn
 			     this corner into a grey block at tile size. -->
+			<!-- The emotes sit on the shortest messages on purpose: at 180px a name,
+			     a sentence and an emote do not fit on one line, and a wrapped bubble
+			     turns this corner into a grey block. -->
 			<div class="chat">
-				<div class="line"><b style="color: #1e90ff">Garu1f</b>: no way</div>
+				<div class="line">
+					<b style="color: #1e90ff">Garu1f</b>: no way
+					<img src="emotes/nymnCorn.webp" alt="nymnCorn" />
+				</div>
 				<div class="line">
 					<b style="color: #ff69b4">stardust_dragon</b>: finally
+					<img src="emotes/Clap.webp" alt="Clap" />
 				</div>
 				<div class="line">
 					<b style="color: #9acd32"><i class="badge"></i>DeceitfulPear</b>: clip it
 				</div>
-				<div class="line"><b style="color: #ff7f50">Cyberwire69</b>: LULW 😂</div>
 				<div class="line">
-					<b style="color: #8a2be2"><i class="badge"></i>tooclose</b>: W overlay
+					<b style="color: #ff7f50">Cyberwire69</b>:
+					<img src="emotes/glorp.webp" alt="glorp" />
+					<img src="emotes/glorp.webp" alt="glorp" />
+				</div>
+				<div class="line">
+					<b style="color: #8a2be2"><i class="badge"></i>tooclose</b>: W
+					<img src="emotes/Clap.webp" alt="Clap" />
 				</div>
 			</div>
 
