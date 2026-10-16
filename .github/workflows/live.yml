@@ -1,0 +1,28 @@
+name: Live API check
+
+# The extension depends on five third party endpoints (Twitch IRC, ivr.fi,
+# BTTV, FFZ, 7TV) that have broken it before. This runs the live suites against
+# the real services. It is kept out of CI because it needs the network and a
+# busy Twitch chat, so it can fail for reasons unrelated to a change.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    name: Live tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:live
